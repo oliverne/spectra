@@ -1,0 +1,292 @@
+.btn {
+  appearance: none;
+  background: var(--spectra-button-bg, var(--spectra-color-surface, #fff));
+  border: var(--spectra-border-width, 0.05rem) solid
+    var(--spectra-button-border-color, var(--spectra-color-primary, #5755d9));
+  border-radius: var(--spectra-border-radius, 0.1rem);
+  color: var(--spectra-button-color, var(--spectra-color-primary, #5755d9));
+  cursor: pointer;
+  display: inline-block;
+  font-size: var(--spectra-font-size, 0.8rem);
+  height: var(--spectra-control-height, 1.8rem);
+  line-height: var(--spectra-line-height, 1.2rem);
+  outline: none;
+  padding: var(--spectra-button-padding-y, 0.25rem)
+    var(--spectra-button-padding-x, var(--spectra-space-2, 0.4rem));
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    border 0.2s,
+    box-shadow 0.2s,
+    color 0.2s;
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.btn:focus {
+  box-shadow: 0 0 0 0.1rem
+    var(--spectra-button-focus-ring, var(--spectra-color-focus-ring, rgb(87 85 217 / 20%)));
+}
+
+.btn:focus,
+.btn:hover {
+  background: var(--spectra-button-hover-bg, var(--spectra-color-secondary, #f1f1fc));
+  border-color: var(
+    --spectra-button-hover-border-color,
+    var(--spectra-color-primary-dark, #4b48d6)
+  );
+  text-decoration: none;
+}
+
+.btn:active,
+.btn.active {
+  background: var(--spectra-button-active-bg, var(--spectra-color-primary-dark, #4b48d6));
+  border-color: var(
+    --spectra-button-active-border-color,
+    var(--spectra-color-primary-darker, #3634d2)
+  );
+  color: var(--spectra-button-active-color, var(--spectra-color-on-accent, #fff));
+  text-decoration: none;
+}
+
+.btn:active.loading::after,
+.btn.active.loading::after {
+  border-bottom-color: var(--spectra-button-active-color, var(--spectra-color-on-accent, #fff));
+  border-left-color: var(--spectra-button-active-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn[disabled],
+.btn:disabled,
+.btn.disabled {
+  cursor: default;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.btn.btn-primary {
+  background: var(--spectra-button-primary-bg, var(--spectra-color-primary, #5755d9));
+  border-color: var(
+    --spectra-button-primary-border-color,
+    var(--spectra-color-primary-dark, #4b48d6)
+  );
+  color: var(--spectra-button-primary-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-primary:focus,
+.btn.btn-primary:hover {
+  background: var(--spectra-button-primary-hover-bg, var(--spectra-color-primary-hover, #4240d4));
+  border-color: var(
+    --spectra-button-primary-hover-border-color,
+    var(--spectra-color-primary-darker, #3634d2)
+  );
+  color: var(--spectra-button-primary-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-primary:active,
+.btn.btn-primary.active {
+  background: var(--spectra-button-primary-active-bg, var(--spectra-color-primary-active, #3a38d2));
+  border-color: var(
+    --spectra-button-primary-active-border-color,
+    var(--spectra-color-primary-darkest, #302ecd)
+  );
+  color: var(--spectra-button-primary-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-primary.loading::after {
+  border-bottom-color: var(--spectra-button-primary-color, var(--spectra-color-on-accent, #fff));
+  border-left-color: var(--spectra-button-primary-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-success {
+  background: var(--spectra-button-success-bg, var(--spectra-color-success, #32b643));
+  border-color: var(
+    --spectra-button-success-border-color,
+    var(--spectra-color-success-border, #2faa3f)
+  );
+  color: var(--spectra-button-success-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-success:focus {
+  box-shadow: 0 0 0 0.1rem
+    var(
+      --spectra-button-success-focus-ring,
+      var(--spectra-color-success-focus-ring, rgb(50 182 67 / 20%))
+    );
+}
+
+.btn.btn-success:focus,
+.btn.btn-success:hover {
+  background: var(--spectra-button-success-hover-bg, var(--spectra-color-success-hover, #30ae40));
+  border-color: var(
+    --spectra-button-success-hover-border-color,
+    var(--spectra-color-success-hover-border, #2da23c)
+  );
+  color: var(--spectra-button-success-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-success:active,
+.btn.btn-success.active {
+  background: var(--spectra-button-success-active-bg, var(--spectra-color-success-active, #2a9a39));
+  border-color: var(
+    --spectra-button-success-active-border-color,
+    var(--spectra-color-success-active-border, #278e34)
+  );
+  color: var(--spectra-button-success-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-success.loading::after {
+  border-bottom-color: var(--spectra-button-success-color, var(--spectra-color-on-accent, #fff));
+  border-left-color: var(--spectra-button-success-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-error {
+  background: var(--spectra-button-error-bg, var(--spectra-color-error, #e85600));
+  border-color: var(
+    --spectra-button-error-border-color,
+    var(--spectra-color-error-border, #d95000)
+  );
+  color: var(--spectra-button-error-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-error:focus {
+  box-shadow: 0 0 0 0.1rem
+    var(
+      --spectra-button-error-focus-ring,
+      var(--spectra-color-error-focus-ring, rgb(232 86 0 / 20%))
+    );
+}
+
+.btn.btn-error:focus,
+.btn.btn-error:hover {
+  background: var(--spectra-button-error-hover-bg, var(--spectra-color-error-hover, #de5200));
+  border-color: var(
+    --spectra-button-error-hover-border-color,
+    var(--spectra-color-error-hover-border, #cf4d00)
+  );
+  color: var(--spectra-button-error-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-error:active,
+.btn.btn-error.active {
+  background: var(--spectra-button-error-active-bg, var(--spectra-color-error-active, #c44900));
+  border-color: var(
+    --spectra-button-error-active-border-color,
+    var(--spectra-color-error-active-border, #b54300)
+  );
+  color: var(--spectra-button-error-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-error.loading::after {
+  border-bottom-color: var(--spectra-button-error-color, var(--spectra-color-on-accent, #fff));
+  border-left-color: var(--spectra-button-error-color, var(--spectra-color-on-accent, #fff));
+}
+
+.btn.btn-link {
+  background: transparent;
+  border-color: transparent;
+  color: var(--spectra-color-link, #5755d9);
+}
+
+.btn.btn-link:focus,
+.btn.btn-link:hover,
+.btn.btn-link:active,
+.btn.btn-link.active {
+  color: var(--spectra-color-link-active, #302ecd);
+}
+
+.btn.btn-sm {
+  font-size: var(--spectra-font-size-sm, 0.7rem);
+  height: var(--spectra-control-height-sm, 1.4rem);
+  padding: var(--spectra-button-padding-y-sm, 0.05rem) var(--spectra-button-padding-x-sm, 0.3rem);
+}
+
+.btn.btn-lg {
+  font-size: var(--spectra-font-size-lg, 0.9rem);
+  height: var(--spectra-control-height-lg, 2rem);
+  padding: var(--spectra-button-padding-y-lg, 0.35rem) var(--spectra-button-padding-x-lg, 0.6rem);
+}
+
+.btn.btn-block {
+  display: block;
+  width: 100%;
+}
+
+.btn.btn-action {
+  padding-left: 0;
+  padding-right: 0;
+  width: var(--spectra-control-height, 1.8rem);
+}
+
+.btn.btn-action.btn-sm {
+  width: var(--spectra-control-height-sm, 1.4rem);
+}
+
+.btn.btn-action.btn-lg {
+  width: var(--spectra-control-height-lg, 2rem);
+}
+
+.btn.btn-clear {
+  background: transparent;
+  border: 0;
+  color: currentColor;
+  height: var(--spectra-space-5, 1rem);
+  line-height: var(--spectra-space-4, 0.8rem);
+  margin-left: var(--spectra-space-1, 0.2rem);
+  margin-right: -2px;
+  opacity: 1;
+  padding: var(--spectra-space-half, 0.1rem);
+  text-decoration: none;
+  width: var(--spectra-space-5, 1rem);
+}
+
+.btn.btn-clear:focus,
+.btn.btn-clear:hover {
+  background: var(--spectra-color-clear-hover, rgb(247 248 249 / 50%));
+  opacity: 0.95;
+}
+
+.btn.btn-clear::before {
+  content: "\2715";
+}
+
+.btn-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+
+.btn-group .btn {
+  flex: 1 0 auto;
+}
+
+.btn-group .btn:first-child:not(:last-child) {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.btn-group .btn:not(:first-child):not(:last-child) {
+  border-radius: 0;
+  margin-left: calc(-1 * var(--spectra-border-width, 0.05rem));
+}
+
+.btn-group .btn:last-child:not(:first-child) {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  margin-left: calc(-1 * var(--spectra-border-width, 0.05rem));
+}
+
+.btn-group .btn:focus,
+.btn-group .btn:hover,
+.btn-group .btn:active,
+.btn-group .btn.active {
+  z-index: var(--spectra-z-index-active, 1);
+}
+
+.btn-group.btn-group-block {
+  display: flex;
+}
+
+.btn-group.btn-group-block .btn {
+  flex: 1 0 0;
+}

@@ -1,5 +1,8 @@
 .idea/
 node_modules/
+/build/
+/test-results/
+/playwright-report/
 yarn.lock
 package-lock.json
 .*
@@ -8,3 +11,4 @@ package-lock.json
 !.gitattributes
 !.hound.yml
 !.scss-lint.yml
+!.node-version

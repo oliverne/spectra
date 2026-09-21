@@ -1,0 +1,52 @@
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: var(--spectra-font-size-root, 20px);
+  line-height: var(--spectra-line-height-root, 1.5);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--spectra-color-background, #fff);
+  color: var(--spectra-color-text, #3b4351);
+  font-family: var(
+    --spectra-font-family-base,
+    -apple-system,
+    system-ui,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif
+  );
+  font-size: var(--spectra-font-size, 0.8rem);
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: var(--spectra-color-link, #5755d9);
+  outline: none;
+  text-decoration: none;
+}
+
+a:focus {
+  box-shadow: 0 0 0 0.1rem var(--spectra-color-focus-ring, rgb(87 85 217 / 20%));
+}
+
+a:focus,
+a:hover,
+a:active,
+a.active {
+  color: var(--spectra-color-link-active, #302ecd);
+  text-decoration: underline;
+}
+
+a:visited {
+  color: var(--spectra-color-link-visited, #807fe2);
+}

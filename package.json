@@ -5,6 +5,17 @@
   "author": "Yan Zhu <picturepan2@hotmail.com>",
   "description": "Spectre.css: A lightweight, responsive and modern CSS framework",
   "main": "dist/spectre.css",
+  "packageManager": "pnpm@12.5.1",
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=12 <13"
+  },
+  "scripts": {
+    "build:phase1": "node scripts/build-css.mts",
+    "check:phase1": "biome check biome.json package.json playwright.config.mts vitest.config.mts scripts tests src/spectra.css src/tokens.css src/base src/components",
+    "test": "vitest run",
+    "test:visual": "pnpm build:phase1 && playwright test -c playwright.config.mts"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/picturepan2/spectre.git"
@@ -24,6 +35,9 @@
     "url": "https://github.com/picturepan2/spectre/issues"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@playwright/test": "1.63.0",
+    "browserslist": "4.26.3",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
     "gulp-clean-css": "^4.3.0",
@@ -32,14 +46,16 @@
     "gulp-rename": "^2.0.0",
     "gulp-sass": "^4.1.0",
     "jstransformer-highlight": "^2.0.0",
-    "jstransformer-markdown-it": "^2.1.0"
+    "jstransformer-markdown-it": "^2.1.0",
+    "lightningcss": "1.33.0",
+    "vitest": "5.0.1"
   },
   "browserslist": [
-    "last 4 Chrome versions",
-    "Edge >= 12",
+    "last 2 Chrome versions",
+    "last 2 Edge versions",
+    "last 2 Firefox versions",
     "Firefox ESR",
-    "last 4 Safari versions",
-    "last 4 Opera versions",
-    "Explorer >= 10"
+    "Safari >= 16.4",
+    "iOS >= 16.4"
   ]
 }
