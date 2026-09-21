@@ -5,6 +5,14 @@
   "author": "Yan Zhu <picturepan2@hotmail.com>",
   "description": "Spectre.css: A lightweight, responsive and modern CSS framework",
   "main": "dist/spectre.css",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:css": "node scripts/build.mjs css",
+    "build:docs": "node scripts/build.mjs docs",
+    "dev": "node scripts/build.mjs watch",
+    "test": "npm run build && node scripts/check-build.mjs"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/picturepan2/spectre.git"
@@ -17,29 +25,23 @@
     "responsive",
     "mobile-friendly",
     "front-end",
-    "sass",
+    "postcss",
     "modern"
   ],
   "bugs": {
     "url": "https://github.com/picturepan2/spectre/issues"
   },
   "devDependencies": {
-    "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^7.0.1",
-    "gulp-clean-css": "^4.3.0",
-    "gulp-csscomb": "^3.1.0",
-    "gulp-pug": "^4.0.1",
-    "gulp-rename": "^2.0.0",
-    "gulp-sass": "^4.1.0",
+    "autoprefixer": "^10.4.21",
+    "chokidar": "^4.0.3",
+    "cssnano": "^7.1.1",
     "jstransformer-highlight": "^2.0.0",
-    "jstransformer-markdown-it": "^2.1.0"
+    "jstransformer-markdown-it": "^3.0.0",
+    "postcss": "^8.5.6",
+    "pug": "^3.0.3"
   },
   "browserslist": [
-    "last 4 Chrome versions",
-    "Edge >= 12",
-    "Firefox ESR",
-    "last 4 Safari versions",
-    "last 4 Opera versions",
-    "Explorer >= 10"
+    "defaults",
+    "not IE 11"
   ]
 }
