@@ -12,14 +12,14 @@ Spectre.css is a lightweight, responsive and modern CSS framework.
 - Flexbox-based, responsive and mobile-friendly layout
 - Elegantly designed and developed elements and components
 
-Spectre is a side project based on years of CSS development work on a large web service project. Spectre only includes modern base styles, responsive layout system, CSS components and utilities, and it can be modified for your project with Sass/Scss compiler.
+Spectre is a side project based on years of CSS development work on a large web service project. Spectre includes modern base styles, a responsive layout system, CSS components, and utilities. The editable sources are standards-based CSS and require no CSS preprocessor.
 
 Spectre.css is completely free to use. If you enjoy it, please consider [donating via Paypal](https://www.paypal.me/picturepan2) or [via Patreon](https://www.patreon.com/spectrecss) for the further development. ♥ 
 
 
 ## Getting started
 
-There are 5 ways to get started with Spectre CSS framework in your projects. You can either manually install or use NPM, Yarn and Bower.
+Install Spectre manually, from a CDN, or with a modern JavaScript package manager.
 
 ### Install manually
 Download the compiled and minified [Spectre CSS files](https://github.com/picturepan2/spectre/tree/master/docs/dist). And include `spectre.css` located in `/docs/dist` in your website or Web app &lt;head&gt; part.
@@ -37,12 +37,20 @@ Alternatively, you can use the [unpkg](https://unpkg.com/) or [cdnjs](https://cd
 ### Install with Yarn
 `$ yarn add spectre.css`
 
-### Install with Bower
-`$ bower install spectre.css --save`
-
 ## Compiling custom version
 
 You can compile your custom version of Spectre.css. Read [the documentation](https://picturepan2.github.io/spectre/getting-started/custom.html).
+
+The build uses PostCSS, Autoprefixer, cssnano, and Pug on a current Node.js release:
+
+```sh
+npm install
+npm run build       # Build distribution CSS and documentation
+npm run build:css   # Build CSS only
+npm run build:docs  # Build documentation and its CSS
+npm run dev         # Rebuild when CSS or Pug sources change
+npm test            # Build and verify all expected artifacts
+```
 
 ## Documentation and examples
 

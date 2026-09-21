@@ -48,13 +48,8 @@ block docs-content
           </div>
 
     p
-      | The default image numbers in CSS are #[code 36]. You can copy the mixin and add more numbers in #[code _viewer-360.scss] and re-compiling the CSS.
+      | The default image count is #[code 36]. Add equivalent range-value selectors to #[code src/spectre-exp.css] when using a different count.
 
-    pre.code(data-lang='SCSS')
-      code
-        :highlight(lang="scss")
-          @include viewer-slider-size(36);
-          @include viewer-slider-size(30);
 
     include ../_layout/_ad-c.pug
 
