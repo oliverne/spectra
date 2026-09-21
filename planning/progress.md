@@ -9,7 +9,7 @@
 - `src/spectra.css` 아래에 `--spectra-*` tokens, normalize/base, buttons의 Pure CSS 세로 단위를 구현했다. 일반·압축 CSS와 원본 파일별 source map은 무시되는 `build/phase-01/`에 생성된다.
 - 기존 Gulp/Sass, Pug, `dist/spectre*.css`, `docs/dist/spectre*.css`, 패키지 `main`은 유지했다. 불완전한 새 번들을 배포 경로에 노출하지 않았다.
 - 기존 일반 CSS 62,359바이트와 문서 사본의 SHA-256은 `c7f773ca3363bc5bd54b2849c0e37435c9e1afbb353fc1d79e16d422907fb924`로 일치한다. 압축본도 양쪽 사본이 동일하다.
-- 구 Node Sass 4.14.1은 Node.js 24/macOS arm64를 지원하지 않아 재생성하지 못했다. 체크인된 CSS를 기준선으로 사용했고 기존 배포물은 변경하지 않았다.
+- 기존 Node Sass 4.14.1 기반 빌드는 Node.js 24/macOS arm64 환경에서 실행하지 못했다. Dart Sass(`sass` 패키지)를 통한 재컴파일은 이번 단계에서 검증하지 않았다. CSS 전환의 회귀 비교에는 체크인된 기존 배포물을 기준선으로 사용했고, 해당 파일은 변경하지 않았다.
 
 ## 검증
 

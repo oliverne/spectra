@@ -14,7 +14,7 @@
 - 프로젝트명은 Spectra, 공개 토큰 접두사는 `--spectra-*`다. 기존 공개 클래스와 기본 외형을 유지한다.
 - 지원 범위는 최근 Chrome·Edge·Firefox 2개 major, Firefox ESR, Safari/iOS Safari 16.4 이상이다. IE와 EdgeHTML은 지원하지 않는다.
 - Node.js 24.21.0과 pnpm 12.5.1을 사용한다. `pnpm-lock.yaml`을 유지하고 글로벌 사용자 설정은 수정하지 않는다.
-- Node Sass 4.14.1은 Node.js 24/macOS arm64에서 실행되지 않는다. 구 런타임 설치를 반복하지 말고 체크인된 기존 CSS를 비교 기준으로 사용한다.
+- 기존 Node Sass 4.14.1 기반 빌드는 Node.js 24/macOS arm64에서 실행하지 못했다. SCSS 재컴파일이 필요하면 지원 종료된 Node Sass 대신 Dart Sass(`sass` 패키지)를 사용한다. Dart Sass 재컴파일은 아직 검증하지 않았으며, 컴파일러 교체에 따른 출력 차이가 있을 수 있으므로 체크인된 기존 CSS를 회귀 비교 기준으로 유지한다.
 - Playwright WebKit 통과를 Safari 16.4 실기기 통과로 기록하지 않는다.
 - npm 식별자, 정식 배포 경로, 패키지 `main`, Gulp/Sass 제거는 Phase 06 전까지 확정하거나 변경하지 않는다.
 

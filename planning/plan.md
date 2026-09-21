@@ -23,7 +23,7 @@ Phase 01에서 의존성 설치와 tokens/base/buttons 세로 단위 전환을 �
 | 호환성 | IE 10+, Edge 12+가 설정과 README에 명시됨 | CSS 변수 기반 런타임 테마와 양립하지 않으므로 정책 변경 필요 |
 | 반복·분기 | carousel 8개, filter 8개, viewer 36프레임, RTL 조건문 | 클래스·선택자 범위와 기존 동작 보존 |
 
-최초 조사 시 `package.json`에는 scripts와 테스트 도구가 없고, 저장소에 lockfile과 별도 계획 문서가 없었다. Phase 01에서 구 Node Sass 4.14.1의 Node.js 24/macOS arm64 미지원으로 기존 Sass 재생성은 불가능함을 확인했다. 체크인된 `dist/spectre.css`와 동일한 `docs/dist/spectre.css`를 비교 기준으로 확정했다.
+최초 조사 시 `package.json`에는 scripts와 테스트 도구가 없고, 저장소에 lockfile과 별도 계획 문서가 없었다. Phase 01에서 기존 Node Sass 4.14.1 기반 빌드는 Node.js 24/macOS arm64 환경에서 실행하지 못했다. Dart Sass(`sass` 패키지)를 통한 재컴파일은 검증하지 않았다. 체크인된 `dist/spectre.css`와 동일한 `docs/dist/spectre.css`를 회귀 비교 기준으로 확정했다. 이후 SCSS 재컴파일이 필요하면 지원 종료된 Node Sass 대신 Dart Sass를 사용하되, 출력 차이를 검증하고 기존 기준선은 유지한다. Pure CSS 전환을 위해 Sass 빌드 복구가 필수인 것은 아니다.
 
 ## 프로젝트 이름과 출처
 

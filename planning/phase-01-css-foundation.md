@@ -16,7 +16,7 @@
 
 ## 범위
 
-1. 체크인된 일반·압축 CSS, 문서 페이지와 공개 선택자 범위를 조사하고 대표 fixture 및 크기 기준을 확보한다. 기존 Sass와 산출물이 다르면 차이를 기록하고 기준을 확정한다. 구 Node Sass 설치가 현재 환경에서 실패할 경우 반복 설치로 해결을 가정하지 않는다.
+1. 체크인된 일반·압축 CSS, 문서 페이지와 공개 선택자 범위를 조사하고 대표 fixture 및 크기 기준을 확보한다. 기존 Sass와 산출물이 다르면 차이를 기록하고 기준을 확정한다. 구 Node Sass 설치가 현재 환경에서 실패할 경우 반복 설치로 해결을 가정하지 않는다. SCSS 재컴파일이 필요하면 Dart Sass(`sass` 패키지)를 사용하고 기존 기준선과 출력 차이를 검증한다.
 2. Node.js 24와 pnpm 버전을 프로젝트에 고정하고 lockfile을 도입한다. 글로벌 사용자 설정은 수정하지 않는다.
 3. Lightning CSS로 작은 시험 엔트리를 번들링한다. 새 엔트리는 `spectra.css` 이름을 사용하되 시험 산출물은 임시 또는 별도 경로에 두고 기존 `dist/spectre.css`를 비교 기준으로 보존한다. 전체 기본 번들 전환 전에는 불완전한 번들을 정식 `dist/spectra.css`로 노출하지 않는다.
 4. `tokens.css`, normalize/base, buttons CSS를 작성한다. 공개 토큰은 `--spectra-*`를 사용한다. 버튼에 필요한 토큰부터 출발하되 이름과 계층은 전체 계획에 맞춘다.
@@ -49,7 +49,7 @@
 - `src/spectra.css`가 `tokens.css`, normalize/base, buttons를 명시적 순서로 조립한다. 새 시험 산출물은 `build/phase-01/spectra{,.min}.css`와 source map이며, 기존 `dist/spectre*.css`는 변경하지 않았다.
 - 기본·primary·success/error·active·disabled·크기 버튼, hover/focus, 전역 및 두 컨테이너의 색상·간격 토큰, 후행 외부 override를 테스트로 고정했다.
 - 기존 `dist/spectre.css`와 `docs/dist/spectre.css`는 SHA-256 `c7f773ca3363bc5bd54b2849c0e37435c9e1afbb353fc1d79e16d422907fb924`로 동일하다. 일반 CSS는 62,359바이트다. 압축본도 서로 동일하다.
-- 구 Node Sass 4.14.1은 Node.js 24/macOS arm64를 지원하지 않아 기준선 재생성에 실패했다. 반복 설치나 구 런타임 도입 없이 체크인된 배포물을 비교 기준으로 확정했다.
+- 기존 Node Sass 4.14.1 기반 빌드는 Node.js 24/macOS arm64 환경에서 실행하지 못했다. Dart Sass(`sass` 패키지)를 통한 재컴파일은 이번 단계에서 검증하지 않았다. 체크인된 배포물을 회귀 비교 기준으로 확정했고 기존 배포물은 변경하지 않았다.
 - `pnpm test`의 빌드 계약 5개와 `pnpm test:visual`의 Chromium/Firefox/WebKit 12개 검사가 통과했다. 버튼 computed style과 대표 fixture 픽셀은 세 엔진에서 기존 CSS와 일치했다.
 - Playwright WebKit 통과는 Safari 16.4 실기기 검증을 대신하지 않는다. Safari/iOS Safari 최소 버전 실기기 확인은 전체 전환 전 별도 검증으로 남긴다.
 - 새 번들은 Phase 1 세로 단위만 포함하므로 정식 `dist/spectra.css`로 공개하지 않는다. Phase 02 이후 전환도 기존 배포 경로와 병행한다.
