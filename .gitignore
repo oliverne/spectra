@@ -12,3 +12,8 @@ package-lock.json
 !.hound.yml
 !.scss-lint.yml
 !.node-version
+!/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/spectra-css-migration/
