@@ -32,7 +32,23 @@ For Luna delegation, the coordinator supplies this skill path and the packet to 
 - Parallel workers need isolated checkouts or distinct supported build outputs and matching test inputs. Otherwise serialize shared-output builds.
 - Workers return evidence and integration requirements. The coordinator integrates, verifies, and records progress. Do not recursively delegate.
 
-## 2. Capture the legacy contract
+## 2. Prepare the migration packet
+
+Use the repository helper for direct components of `src/spectre.scss`:
+
+```sh
+pnpm migrate:css inspect <component>
+pnpm migrate:css scaffold <component>
+pnpm migrate:css verify <component> --target <css-file>
+```
+
+- `inspect` reports variables, mixins, dynamic Sass constructs, direct source classes, and the matching checked-in legacy CSS slice.
+- `scaffold` writes `inspection.json`, `legacy.css`, and `candidate.css` under ignored `build/migration/<component>/`. It refuses to overwrite an existing packet. Treat the candidate as a review draft copied from the legacy bundle, not converted source.
+- `verify` checks CSS syntax, unresolved Sass, expanded legacy class coverage, media queries, and standard property coverage. A passing report is static coverage evidence only; it does not establish cascade, token, computed-style, or visual parity.
+
+The helper intentionally rejects indirect aggregator partials and ambiguous slices. Inspect those sources manually or extend the active phase contract before changing the helper. Do not weaken the checks to accept an incomplete conversion.
+
+## 3. Capture the legacy contract
 
 Use `rg` to find assigned selectors, SCSS imports, variables, mixins, and documentation markup. Read their dependencies and corresponding compiled rules. Record selectors, variants, states, pseudo-elements, media queries, animations, and companion styles as a compact checklist.
 
@@ -41,7 +57,7 @@ Use `rg` to find assigned selectors, SCSS imports, variables, mixins, and docume
 - Preserve specificity, rule order, markup, dimensions, and colors. Do not rebuild legacy Node Sass or modify baseline files to make comparisons pass.
 - If a dependency is missing, report it or use the assigned dependency group. Do not inject legacy component CSS into the new bundle to conceal missing work.
 
-## 3. Add the failing contract test
+## 4. Add the failing contract test
 
 Inspect `tests/visual/buttons.spec.ts` for the comparison pattern and `tests/build/css-build.test.ts` for bundle contracts. Resolve current paths before reusing them.
 
@@ -58,7 +74,7 @@ Keep fixture resets identical and avoid resetting properties under comparison. S
 
 Run the targeted test before conversion when practical. Record the expected missing-component failure. Browser-launch or dependency errors are environment blockers, not successful failing tests.
 
-## 4. Convert the assigned slice
+## 5. Convert the assigned slice
 
 Write standard flat CSS in the assigned category, preserving selector expansion and cascade order. Do not mechanically substitute native nesting or introduce `@layer`.
 
@@ -72,7 +88,9 @@ Write standard flat CSS in the assigned category, preserving selector expansion 
 
 For shared edits outside worker ownership, return exact proposed values/insertions and mark integration pending. Do not claim parity before the component is included in the tested bundle.
 
-## 5. Verify integration
+Run `pnpm migrate:css verify <component> --target <css-file>` before browser parity tests. Resolve every static coverage failure or document why the active phase contract allows the difference.
+
+## 6. Verify integration
 
 Resolve commands from `package.json` and active test configuration. Planned commands may not exist yet. Current Phase 01 commands are:
 
@@ -90,7 +108,7 @@ After targeted checks pass, run the integrated build/contract suite and Chromium
 
 WebKit results do not establish Safari/iOS Safari 16.4 device coverage. Keep blocked checks pending. Fix failures within the slice; return cross-component contract changes to the coordinator.
 
-## 6. Report and stop
+## 7. Report and stop
 
 Return a concise report in Korean:
 

@@ -1,6 +1,6 @@
 # Spectra — Pure CSS 전환 계획
 
-상태: Phase 01 완료, Phase 02 미착수 · 작성일: 2026-09-21
+상태: Phase 01 완료, Phase 02 진행 중(마이그레이션 도구 세로 단위 완료) · 갱신일: 2026-09-22
 
 ## 목표와 범위
 
@@ -133,15 +133,43 @@ watch는 CSS import 의존 파일과 Pug include 변경을 반영해야 한다. 
 | 단계 | 작업 | 완료 조건 |
 | --- | --- | --- |
 | 01 | 기준선·새 빌드·tokens/base/buttons 세로 단위 | 별도 출력 경로에서 import 번들링, 기본/상태/부분 테마 및 오류 처리 검증 |
-| 02 | 기본 요소·forms·layout·utilities 전환 | 기존 클래스와 responsive 경계 유지, 토큰 변경의 실제 반영 검증 |
+| 02 (진행 중) | 기본 요소·forms·layout·utilities 전환 | 기존 클래스와 responsive 경계 유지, 토큰 변경의 실제 반영 검증 |
 | 03 | 나머지 기본 컴포넌트 전환 | 기본 번들 전체 pure CSS 전환, 상태별 시각 회귀 확인 |
 | 04 | experimentals·icons·RTL 전환 | 반복 선택자 범위, 아이콘 단독 사용, RTL 합본·동작 검증 |
 | 05 | 문서 CSS·Pug 빌드·watch·사용 안내 교체 | 문서 사이트 전체 재생성 가능, Spectra 명칭·출처·새 CSS 경로 및 Sass/Gulp 대체 안내 반영 |
 | 06 | 구 도구 제거·CI·배포물 계약 확정 | npm 식별자·main·메타데이터 정비, Gulp/Sass 및 구 산출물 제거, clean install/build/check/test 및 pack 검증 |
 
+## 이후 단계 실행 로드맵
+
+### Phase 03 — 나머지 기본 컴포넌트
+
+Phase 02 완료 후 실행 문서를 작성한다. accordions, avatars, badges, breadcrumbs, bars, cards, chips, dropdowns, empty, menus, modals, navs, pagination, panels, popovers, steps, tabs, tiles, toasts, tooltips를 기존 import 순서대로 작은 의존 그룹으로 전환한다. 기본 번들 전체가 Pure CSS가 되고 상태·pseudo-element·CSS-only 상호작용 parity가 통과해야 완료다.
+
+### Phase 04 — experimentals·icons·RTL
+
+Phase 03 완료 후 실행 문서를 작성한다. experimentals는 autocomplete, calendars, carousels, comparison-sliders, filters, meters, off-canvas, parallax, progress, sliders, timelines, viewer-360 순서를 보존한다. icons는 core, navigation, action, object의 단독 사용 계약을 유지한다. RTL은 기본+experimental 합본, tables/off-canvas 방향 분기, transform 방향과 물리 방향 utility 의미를 검증한다. 반복 범위, icon standalone, RTL 동작이 세 브라우저에서 확인돼야 완료다.
+
+### Phase 05 — 문서 빌드와 사용 안내
+
+Phase 04 완료 후 실행 문서를 작성한다. `docs/src/scss/`를 표준 CSS로 전환하고 Pug 직접 렌더링, Markdown/highlight 필터, include/상속, watch 오류 복구를 구현한다. 문서가 `spectra*.css`를 참조하도록 바꾸고 README·설치·customization·브라우저 안내에 새 명칭, CSS token 사용법, Sass API 제거와 원본 출처를 반영한다. 기존 URL과 생성 HTML 경로를 유지하며 문서 전체 clean build가 가능해야 완료다.
+
+### Phase 06 — 구 도구 제거와 배포물 계약
+
+Phase 05 완료 후 실행 문서를 작성한다. npm 식별자와 소유권을 확인한 뒤 package metadata, `main`, repository/homepage를 실제 포크 값으로 확정한다. `dist/spectra{,-exp,-icons}{,.min}.css`와 docs/RTL 산출물, 라이선스 배너, package `files`, source map, pack 내용을 검증한다. 새 경로가 모든 역할을 대체한 뒤에만 Gulp, Node Sass, 관련 설정과 구 산출물을 제거한다. frozen clean install, build/check/test/visual/docs/pack, CI를 통과해야 완료다. publish·release·push는 별도 요청이 있어야 수행한다.
+
+### 단계 전환 규칙
+
+- 다음 phase 구현 전 `planning/phase-{NN}-{title}.md`를 작성하고 진입 조건, 쓰기 범위, 테스트와 완료 조건을 확정한다.
+- `plan.md`는 전체 계약과 단계 순서, phase 문서는 현재 실행 계약, `progress.md`는 관찰된 결과만 기록한다.
+- 각 세션은 완료한 패킷, 실행한 명령과 결과, 미실행 검증, 다음 한 패킷을 `progress.md`와 `handoff.md`에 남긴다.
+- 로컬 검사, CI, Playwright, Safari 실기기, 실제 배포 결과를 구분한다.
+- phase 완료, commit, push, npm publish와 release는 각각 별도 범위다. 계획 문서 갱신이 그 작업을 자동 승인하지 않는다.
+
 Phase 01 실행 범위는 [별도 문서](phase-01-css-foundation.md)에 정의한다. 이후 단계는 착수 시 실행 문서를 작성하며, 앞 단계 검증 결과에 따라 범위를 조정한다. 전환 중 기존 빌드와 새 빌드는 한시적으로 공존한다. 제거는 관련 경로가 모두 대체된 마지막 단계에서 수행한다.
 
 Phase 01은 2026-09-21 완료했다. 시험 번들은 `build/phase-01/`에만 생성하며 정식 `dist/spectra.css`는 아직 만들지 않는다. Phase 02부터는 Phase 1에서 검증한 결정적 import 빌드, 파일별 source map, 토큰 재정의, 기존 computed style 비교 계약을 확장한다.
+
+Phase 02는 2026-09-22 [실행 문서](phase-02-core-elements-forms-layout-utilities.md)의 마이그레이션 도구 세로 단위로 착수했다. SCSS 조사, 기존 배포 CSS 구간 추출, 정적 범위 검사를 자동화했으며 컴포넌트 CSS 전환과 새 번들 통합은 아직 시작하지 않았다.
 
 ## 최종 수용 조건
 
