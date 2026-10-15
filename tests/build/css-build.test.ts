@@ -19,7 +19,11 @@ describe("Phase 1 CSS build", () => {
     expect(css).toContain("Derived from Spectre.css v0.5.9");
     expect(minified).toContain("MIT License");
     for (const sourceFile of [
+      "src/components/typography.css",
+      "src/components/asian.css",
+      "src/components/tables.css",
       "src/components/buttons.css",
+      "src/components/media.css",
       "src/layout/layout.css",
       "src/layout/hero.css",
       "src/layout/navbar.css",

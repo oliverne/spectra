@@ -101,6 +101,15 @@ describe("CSS migration helper", () => {
     expect(failing.missingMediaQueries).toContain("max-width: 480px");
   });
 
+  test("treats the inset shorthand as coverage for its physical longhands", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "spectra-migration-inset-"));
+    const scaffold = await scaffoldComponent("media", directory);
+    const report = await verifyComponent("media", scaffold.candidatePath);
+
+    expect(report.ok).toBe(true);
+    expect(report.missingProperties).toEqual([]);
+  });
+
   test("rejects paths outside the Sass source tree", async () => {
     await expect(inspectComponent("../package")).rejects.toThrow("Invalid component name");
   });

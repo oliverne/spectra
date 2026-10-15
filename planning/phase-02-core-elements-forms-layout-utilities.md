@@ -1,6 +1,6 @@
 # Phase 02 — 기본 요소·forms·layout·utilities
 
-상태: 진행 중 (layout·hero·navbar 패킷 완료, 2026-10-15)
+상태: 진행 중 (layout·hero·navbar·typography·asian·tables·media 패킷 완료, 2026-10-15)
 
 ## 목표
 
@@ -113,12 +113,70 @@ hero/navbar 결과 (2026-10-15):
 - 일반 21,051바이트, 압축 17,441바이트, gzip 일반 4,135바이트다(layout 시점 20,267/16,794/3,963).
 - `dist/spectre*.css`와 docs 사본은 변경하지 않았고 SHA-256이 유지됐다.
 
-## 다음 패킷: typography, asian, tables, media
+## 완료한 패킷: typography, asian, tables, media (2026-10-15)
 
-1. `pnpm migrate:css inspect typography|asian|tables|media`로 클래스·media query·의존성을 조사하고 패킷을 scaffold한다.
-2. 실패하는 computed style·pixel·token scope·외부 override 계약을 `tests/visual/`에 추가한다.
-3. 해당 CSS를 평탄하게 작성한다. 기존 `src/spectre.scss` 순서는 typography→asian→tables→buttons이므로 번들에서 buttons 앞으로 들어갈지, media는 buttons 뒤 어디에 둘지 import 위치를 먼저 확정한다.
-4. layout/hero/navbar와 같은 검증 순서를 실행하고 수용 조건을 이 문서에 기록한다.
+1. `pnpm migrate:css inspect typography|asian|tables|media`로 클래스·media query·의존성을 조사하고 `build/migration/<component>/` 패킷을 scaffold했다. 네 컴포넌트 모두 legacy media query와 상태 선택자가 없다.
+2. `tests/visual/{typography,asian,tables,media}.spec.ts`에 실패하는 computed style·pixel·token scope·외부 override 계약을 먼저 추가했다. 새 CSS가 없는 번들에서 18개 중 15개가 실패했다.
+3. `src/components/{typography,asian,tables,media}.css`를 평탄한 CSS로 작성하고 `src/spectra.css`에 legacy 순서로 import했다.
+4. `src/tokens.css`에 기본·의미·컴포넌트 토큰을 추가하고 `scripts/css-migration.mts`의 정적 검사에 `inset` 축약 인식을 더했다.
+
+import 순서는 typography→asian→tables→buttons→media→layout→hero→navbar다. 아직 전환하지 않은 forms·labels·codes가 buttons 뒤 media 앞에 들어갈 자리를 남겨 기존 `src/spectre.scss` 순서를 보존한다.
+
+typography 수용 조건:
+
+- h1–h6와 `.h1`–`.h6`의 `font-weight: 500`, heading 크기 2/1.6/1.4/1.2/1/0.8rem, unitless `line-height: 1.2`, `margin`을 보존한다.
+- `p` margin-bottom이 `--spectra-line-height`(기본 1.2rem)를 따른다.
+- `abbr[title]`, `kbd`(label-base + label-variant($light-color, $dark-color)), `mark`(label-variant + `darken($highlight-color, 15%)` 테두리), `blockquote`, 중첩 `ul`/`ol` list-style, `dl`을 보존한다.
+- 전역·중첩 토큰 override와 후행 외부 override를 검증한다.
+
+asian 수용 조건:
+
+- `html:lang(zh|zh-Hans|zh-Hant|ja|ko)`와 `.lang-*`의 CJK font-family를 `--spectra-font-family-cjk-*` 토큰으로 제공한다.
+- `:lang(zh|ja)`/`.lang-cjk`의 ins·u `border-bottom`과 인접 del/s/ins/u의 `margin-left: .125em`을 보존한다.
+- html lang 설정, class 기반 font-family, 전역·중첩 토큰 override, 외부 override를 검증한다.
+
+tables 수용 조건:
+
+- `.table`의 `border-collapse`/`border-spacing`/`width`/`text-align: left`를 보존한다.
+- `.table-striped tbody tr:nth-of-type(odd)`는 `--spectra-color-background-subtle`(#f7f8f9), `.table tbody tr.active`와 `.table-hover tbody tr:hover`는 `--spectra-color-background-muted`(#eef0f3)를 따른다.
+- td/th는 `--spectra-border-width`/`--spectra-color-border`, th는 `--spectra-border-width-lg`, padding은 `--spectra-space-3`/`--spectra-space-2`를 따른다.
+- `.table-scroll`의 block/overflow-x/padding-bottom/white-space를 보존하고 전역·중첩 토큰 override와 외부 override를 검증한다.
+- `$rtl` 조건은 LTR 기본 분기인 `text-align: left`만 옮겼다. RTL 엔트리는 Phase 04–05 범위다.
+
+media 수용 조건:
+
+- `.img-responsive`, `.img-fit-cover`/`.img-fit-contain`, `.video-responsive`와 `::before` 비율(56.25/75/100%), iframe/object/embed 절대 배치, `video.video-responsive`를 보존한다.
+- `.figure` margin과 `.figure-caption`의 `--spectra-color-text-muted`/`--spectra-space-2`를 보존한다.
+- 전역·중첩 토큰 override와 외부 override를 검증한다.
+
+검증 순서:
+
+```sh
+pnpm migrate:css verify typography --target src/components/typography.css
+pnpm migrate:css verify asian --target src/components/asian.css
+pnpm migrate:css verify tables --target src/components/tables.css
+pnpm migrate:css verify media --target src/components/media.css
+pnpm check:phase1
+pnpm build:phase1
+pnpm test
+pnpm test:visual
+git diff --check
+```
+
+결과 (2026-10-15):
+
+- 네 `verify` 모두 통과(`ok: true`). 원본 `src/_<component>.scss` negative verify는 의도대로 종료 코드 1로 실패한다.
+- Lightning CSS가 `position: absolute`의 `top/right/bottom/left`를 `inset`으로 접어 정적 검사가 네 물리 longhand를 누락으로 보고했다. `inset`을 해당 longhand의 커버리지로 계산하도록 도구를 확장하고 `media` 회귀 테스트를 추가했다. 검사를 약화하지 않고 축약을 인식하는 방향이다.
+- `pnpm test` 12개, `pnpm test:visual` 105개 통과(buttons 12 + layout 15 + hero 12 + navbar 12 + typography 12 + asian 15 + tables 15 + media 12).
+- 일반 27,757바이트, 압축 23,181바이트, gzip 일반 5,392바이트다(navbar 시점 21,051/17,441/4,135).
+- `dist/spectre*.css`와 docs 사본은 변경하지 않았고 SHA-256이 유지됐다.
+
+## 다음 패킷: forms
+
+1. `pnpm migrate:css inspect forms`로 클래스·media query·상태 선택자·Sass 의존성을 조사하고 패킷을 scaffold한다.
+2. 실패하는 computed style·pixel·상태/validation·token scope·외부 override 계약을 `tests/visual/forms.spec.ts`에 추가한다.
+3. `src/components/forms.css`를 평탄하게 작성하고 `src/spectra.css`의 buttons 뒤, media 앞에 import한다. 상태·validation·input group과 색상 계산 범위가 넓으므로 수용 조건을 이 문서에 기록한다.
+4. layout/hero/navbar 및 typography/asian/tables/media와 같은 검증 순서를 실행한다.
 
 ## 변환 계약
 
@@ -136,15 +194,17 @@ hero/navbar 결과 (2026-10-15):
 - Sass 변수 또는 기존 클래스·breakpoint가 누락된 후보는 0이 아닌 결과로 실패한다.
 - 경로 순회를 거부하고 저장소 source 및 기존 배포물을 수정하지 않는다.
 - legacy 구간은 마지막 완전한 규칙에서 끝나 다음 컴포넌트의 부분 selector 클래스를 포함하지 않는다(`navbar`→`accordions` 회귀 테스트).
+- `inset` 축약은 Lightning CSS가 `top/right/bottom/left`를 접은 결과로 인정해 물리 longhand 커버리지로 계산한다(`media` 회귀 테스트).
 - `pnpm check:phase1`, `pnpm test`, `pnpm build:phase1`, `git diff --check`가 통과한다.
 
 ## 현재 결과
 
-- 마이그레이션 도구와 `layout`, `hero`, `navbar` 패킷을 구현하고 검증했다.
+- 마이그레이션 도구와 `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media` 패킷을 구현하고 검증했다.
 - 기존 `spectra-css-migration` 스킬이 도구의 inspect/scaffold/verify 흐름과 정적 검사 한계를 안내한다.
 - `layout` scaffold는 기존 `.container`부터 `.hero` 직전까지 추출됐고, `src/layout/layout.css`가 정적 검사를 통과했다. 원본 `_layout.scss`에 대한 negative verify는 남은 Sass와 breakpoint 불일치를 보고하며 종료 코드 1로 실패한다.
 - `hero` scaffold는 `.hero`부터 `.navbar` 직전까지, `navbar` scaffold는 `.navbar`부터 `.accordions` 직전까지 추출됐다. 두 `src/layout/*.css`가 정적 검사를 통과했다.
-- 실패 우선 증거: layout CSS가 없는 번들에서 `tests/visual/layout.spec.ts` 5개 중 4개가 실패했고, hero/navbar CSS가 없는 번들에서 `hero.spec.ts`·`navbar.spec.ts` 8개 중 6개가 실패했다. 변환 후 세 브라우저에서 layout 15개, hero 12개, navbar 12개가 모두 통과했다.
-- `pnpm check:phase1`(경고 12건은 레거시 show/hide의 의도된 `!important`), `pnpm test` 11개, `pnpm build:phase1`, `pnpm test:visual` 51개, `git diff --check`가 통과했다.
+- `typography` scaffold는 `h1`부터 `html:lang(zh)` 직전까지, `asian`은 `html:lang(zh)`부터 `.table` 직전까지, `tables`는 `.table`부터 `.btn` 직전까지, `media`는 `.img-responsive`부터 `.container` 직전까지 추출됐다. 네 `src/components/*.css`가 정적 검사를 통과했다.
+- 실패 우선 증거: layout CSS가 없는 번들에서 `tests/visual/layout.spec.ts` 5개 중 4개가 실패했고, hero/navbar CSS가 없는 번들에서 `hero.spec.ts`·`navbar.spec.ts` 8개 중 6개가 실패했다. typography/asian/tables/media CSS가 없는 번들에서 네 신규 spec 18개 중 15개가 실패했다. 변환 후 세 브라우저에서 layout 15개, hero 12개, navbar 12개, typography 12개, asian 15개, tables 15개, media 12개가 모두 통과했다.
+- `pnpm check:phase1`(경고 14건: 레거시 show/hide의 의도된 `!important` 12건과 typography 중첩 목록의 하위 명시도 선언 2건), `pnpm test` 12개, `pnpm build:phase1`, `pnpm test:visual` 105개, `git diff --check`가 통과했다.
 - `dist/spectre*.css`와 `docs/dist/spectre*.css`는 변경하지 않았다. 레거시 일반 CSS SHA-256은 `c7f773ca3363bc5bd54b2849c0e37435c9e1afbb353fc1d79e16d422907fb924` 그대로다.
-- Phase 02의 나머지 패킷(typography, asian, tables, media, forms, labels, codes, animations, utilities)은 아직 시작하지 않았다.
+- Phase 02의 나머지 패킷(forms, labels, codes, animations, utilities)은 아직 시작하지 않았다.

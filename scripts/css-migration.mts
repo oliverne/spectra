@@ -396,6 +396,16 @@ function difference(expected: string[], actual: string[]) {
   return expected.filter((value) => !actualSet.has(value));
 }
 
+function expandInsetShorthand(source: string, properties: string[]) {
+  const expanded = new Set(properties);
+  // Lightning CSS collapses the physical top/right/bottom/left longhands into the `inset`
+  // shorthand. `inset` always resets all four sides, so it covers each physical longhand.
+  if (/(?:^|[;{])\s*inset\s*:/.test(stripComments(source))) {
+    for (const side of ["top", "right", "bottom", "left"]) expanded.add(side);
+  }
+  return [...expanded];
+}
+
 export async function verifyComponent(
   component: string,
   targetPath: string,
@@ -429,7 +439,7 @@ export async function verifyComponent(
   );
   const missingProperties = difference(
     inspection.legacy.properties,
-    extractProperties(normalizedTarget),
+    expandInsetShorthand(normalizedTarget, extractProperties(normalizedTarget)),
   );
 
   return {

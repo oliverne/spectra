@@ -1,0 +1,37 @@
+/* Tables */
+.table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.table.table-striped tbody tr:nth-of-type(odd) {
+  background: var(--spectra-color-background-subtle, #f7f8f9);
+}
+
+.table tbody tr.active,
+.table.table-striped tbody tr.active {
+  background: var(--spectra-color-background-muted, #eef0f3);
+}
+
+.table.table-hover tbody tr:hover {
+  background: var(--spectra-color-background-muted, #eef0f3);
+}
+
+.table.table-scroll {
+  display: block;
+  overflow-x: auto;
+  padding-bottom: 0.75rem;
+  white-space: nowrap;
+}
+
+.table td,
+.table th {
+  border-bottom: var(--spectra-border-width, 0.05rem) solid var(--spectra-color-border, #dadee4);
+  padding: var(--spectra-space-3, 0.6rem) var(--spectra-space-2, 0.4rem);
+}
+
+.table th {
+  border-bottom-width: var(--spectra-border-width-lg, 0.1rem);
+}
