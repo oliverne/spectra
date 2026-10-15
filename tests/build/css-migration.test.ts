@@ -44,6 +44,18 @@ describe("CSS migration helper", () => {
     expect(forms.legacy?.properties).not.toContain("input");
   });
 
+  test("drops a trailing partial selector from the next component", async () => {
+    const navbar = await inspectComponent("navbar");
+
+    expect(navbar.legacy?.nextComponent).toBe("accordions");
+    expect(navbar.legacy?.classes).toEqual([
+      "navbar",
+      "navbar-brand",
+      "navbar-center",
+      "navbar-section",
+    ]);
+  });
+
   test("scaffolds a reviewable layout packet without editing source files", async () => {
     const directory = await mkdtemp(path.join(tmpdir(), "spectra-migration-scaffold-"));
     const result = await scaffoldComponent("layout", directory);

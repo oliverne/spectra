@@ -1,0 +1,27 @@
+.navbar {
+  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.navbar .navbar-section {
+  align-items: center;
+  display: flex;
+  flex: 1 0 0;
+}
+
+.navbar .navbar-section:not(:first-child):last-child {
+  justify-content: flex-end;
+}
+
+.navbar .navbar-center {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.navbar .navbar-brand {
+  font-size: var(--spectra-font-size-lg, 0.9rem);
+  text-decoration: none;
+}

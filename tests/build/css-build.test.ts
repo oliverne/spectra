@@ -18,11 +18,19 @@ describe("Phase 1 CSS build", () => {
     expect(css).toContain("Spectra v0.1.0-dev");
     expect(css).toContain("Derived from Spectre.css v0.5.9");
     expect(minified).toContain("MIT License");
-    expect(
-      sourceMap.sections.some((section) =>
-        section.map.sources.some((source) => source.endsWith("src/components/buttons.css")),
-      ),
-    ).toBe(true);
+    for (const sourceFile of [
+      "src/components/buttons.css",
+      "src/layout/layout.css",
+      "src/layout/hero.css",
+      "src/layout/navbar.css",
+    ]) {
+      expect(
+        sourceMap.sections.some((section) =>
+          section.map.sources.some((source) => source.endsWith(sourceFile)),
+        ),
+        `source map covers ${sourceFile}`,
+      ).toBe(true);
+    }
   });
 
   test("produces byte-identical output from the same input", async () => {

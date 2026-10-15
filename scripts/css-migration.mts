@@ -244,8 +244,15 @@ async function legacySlice(component: string) {
   }
   if (end === -1) end = legacyBundle.length;
 
+  // The boundary offset points at the next component's first matching selector, which can be a
+  // partial selector from a grouped rule. Keep only complete rules so the next component cannot
+  // leak classes (for example `.accordion ... .icon:first-child,`) into this component's slice.
+  const slice = legacyBundle.slice(start, end);
+  const lastCompleteRule = slice.lastIndexOf("}");
+  const completeSlice = lastCompleteRule === -1 ? slice : slice.slice(0, lastCompleteRule + 1);
+
   return {
-    css: `${legacyBundle.slice(start, end).trim()}\n`,
+    css: `${completeSlice.trim()}\n`,
     nextComponent,
     startSelector,
   };
