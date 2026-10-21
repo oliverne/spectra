@@ -2,11 +2,12 @@
 @import "./tokens.css";
 @import "./base/normalize.css";
 @import "./base/base.css";
-/* Elements keep the legacy src/spectre.scss order: typography, asian, tables, buttons, media. */
+/* Elements keep the legacy src/spectre.scss order: typography, asian, tables, buttons, forms, media. */
 @import "./components/typography.css";
 @import "./components/asian.css";
 @import "./components/tables.css";
 @import "./components/buttons.css";
+@import "./components/forms.css";
 @import "./components/media.css";
 @import "./layout/layout.css";
 @import "./layout/hero.css";

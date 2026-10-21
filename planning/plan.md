@@ -1,6 +1,6 @@
 # Spectra — Pure CSS 전환 계획
 
-상태: Phase 01 완료, Phase 02 진행 중(layout·hero·navbar·typography·asian·tables·media 패킷 완료) · 갱신일: 2026-10-15
+상태: Phase 01 완료, Phase 02 진행 중(layout·hero·navbar·typography·asian·tables·media·forms 패킷 완료) · 갱신일: 2026-10-21
 
 ## 목표와 범위
 
@@ -169,7 +169,7 @@ Phase 01 실행 범위는 [별도 문서](phase-01-css-foundation.md)에 정의�
 
 Phase 01은 2026-09-21 완료했다. 시험 번들은 `build/phase-01/`에만 생성하며 정식 `dist/spectra.css`는 아직 만들지 않는다. Phase 02부터는 Phase 1에서 검증한 결정적 import 빌드, 파일별 source map, 토큰 재정의, 기존 computed style 비교 계약을 확장한다.
 
-Phase 02는 2026-09-22 [실행 문서](phase-02-core-elements-forms-layout-utilities.md)의 마이그레이션 도구 세로 단위로 착수해 SCSS 조사, 기존 배포 CSS 구간 추출, 정적 범위 검사를 자동화했다. 2026-10-15에 첫 컴포넌트인 layout을 `src/layout/layout.css`로 전환하고 새 번들에 통합해 세 브라우저 computed style·pixel 계약을 통과했다. 이어서 hero와 navbar를 `src/layout/{hero,navbar}.css`로, typography, asian, tables, media를 `src/components/{typography,asian,tables,media}.css`로 전환하고 정적 검사와 세 브라우저 계약을 통과했다. forms, labels, codes, animations, utilities 패킷은 남아 있다.
+Phase 02는 2026-09-22 [실행 문서](phase-02-core-elements-forms-layout-utilities.md)의 마이그레이션 도구 세로 단위로 착수해 SCSS 조사, 기존 배포 CSS 구간 추출, 정적 범위 검사를 자동화했다. 2026-10-15에 첫 컴포넌트인 layout을 `src/layout/layout.css`로 전환하고 새 번들에 통합해 세 브라우저 computed style·pixel 계약을 통과했다. 이어서 hero와 navbar를 `src/layout/{hero,navbar}.css`로, typography, asian, tables, media, forms를 `src/components/{typography,asian,tables,media,forms}.css`로 전환하고 정적 검사와 세 브라우저 계약을 통과했다. labels, codes, animations, utilities 패킷은 남아 있다.
 
 ## 최종 수용 조건
 
