@@ -1,6 +1,6 @@
 # 작업 인계
 
-갱신일: 2026-10-21
+갱신일: 2026-10-24
 
 이 문서는 새 세션·모델·에이전트의 진입점이다. 상태의 원본은 [progress.md](progress.md), 전체 계약과 단계 순서는 [plan.md](plan.md), 현재 실행 범위는 [Phase 02 문서](phase-02-core-elements-forms-layout-utilities.md)다.
 
@@ -8,7 +8,7 @@
 
 1. 루트 `AGENTS.md`와 이 문서를 읽는다.
 2. `planning/plan.md`, `planning/progress.md`, 현재 phase 문서를 읽는다.
-3. `git status --short --branch`와 최근 커밋을 확인한다. 아래 변경 세트와 검증 기록은 2026-10-21 스냅샷이므로 현재 결과로 다시 확인한다.
+3. `git status --short --branch`와 최근 커밋을 확인한다. 아래 변경 세트와 검증 기록은 2026-10-24 스냅샷이므로 현재 결과로 다시 확인한다.
 4. Node.js `24.21.0`, pnpm `12.5.1`인지 확인한다.
 5. 컴포넌트 전환에는 `.agents/skills/spectra-css-migration/SKILL.md`를 적용한다.
 6. 현재 phase의 다음 미완료 작업 패킷 하나만 구현하고 검증한다. 완료되지 않은 phase를 건너뛰거나 다음 phase 구현으로 자동 전환하지 않는다.
@@ -16,14 +16,14 @@
 
 ## 현재 체크포인트
 
-- Phase 01은 구현과 로컬 검증이 완료됐다. Phase 02는 마이그레이션 도구와 `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms` 패킷을 완료했다. 다음은 `labels`, `codes`다.
-- `src/spectra.css`는 tokens, normalize/base, typography, asian, tables, buttons, forms, media, layout, hero, navbar 순서로 조립한다. `src/components/{typography,asian,tables,media,forms}.css`와 `src/layout/{layout,hero,navbar}.css`가 레거시 평탄 CSS를 담는다. 아직 전환하지 않은 labels·codes가 forms 뒤 media 앞에 들어간다.
+- Phase 01은 구현과 로컬 검증이 완료됐다. Phase 02는 마이그레이션 도구와 `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms`, `labels`, `codes` 패킷을 완료했다. 다음은 `animations`, `utilities`다.
+- `src/spectra.css`는 tokens, normalize/base, typography, asian, tables, buttons, forms, labels, codes, media, layout, hero, navbar 순서로 조립한다. `src/components/{typography,asian,tables,buttons,forms,labels,codes,media}.css`와 `src/layout/{layout,hero,navbar}.css`가 레거시 평탄 CSS를 담는다. utilities는 아직 전환하지 않았다.
 - `pnpm migrate:css inspect|scaffold|verify`가 SCSS 조사, 체크인된 기존 CSS 구간 추출, 후보의 정적 범위 검사를 제공한다. `legacySlice`는 마지막 완전한 규칙까지만 남겨 다음 컴포넌트의 부분 selector 클래스가 새지 않는다. `verify`는 Lightning CSS가 `top/right/bottom/left`를 접은 `inset` 축약을 물리 longhand 커버리지로 인정한다.
-- `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms` 작업 패킷은 무시되는 `build/migration/<component>/`에 있다. 같은 workspace에서 파일이 존재하면 `scaffold`를 다시 실행하지 않는다(기존 패킷을 덮어쓰지 않고 실패한다). 새 checkout처럼 파일이 없으면 명령으로 재생성한다.
+- `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms`, `labels`, `codes` 작업 패킷은 무시되는 `build/migration/<component>/`에 있다. 같은 workspace에서 파일이 존재하면 `scaffold`를 다시 실행하지 않는다(기존 패킷을 덮어쓰지 않고 실패한다). 새 checkout처럼 파일이 없으면 명령으로 재생성한다.
 - 기존 Gulp/Sass, Pug, `dist/spectre*.css`, `docs/dist/spectre*.css`, 패키지 `main`은 유지돼 있다. 정식 `dist/spectra.css`는 아직 없다.
 - `pnpm-workspace.yaml`이 이번 세션에 생겼다. `allowBuilds`에서 `node-sass`만 `false`이고 `core-js`, `es5-ext`, `fsevents`, `highlight.js`는 `true`다. node-sass postinstall은 darwin-arm64 바이너리 404와 python2 부재로 실패해 install을 막는다.
 
-### forms 작업 변경 세트
+### labels, codes 작업 변경 세트
 
 아래 파일이 이번 패킷을 구성한다. 커밋 여부와 브랜치·원격 차이는 새 컨텍스트에서 Git으로 다시 확인한다.
 
@@ -31,8 +31,10 @@
 modified  src/spectra.css
 modified  src/tokens.css
 modified  tests/build/css-build.test.ts
-added     src/components/forms.css
-added     tests/visual/forms.spec.ts
+added     src/components/labels.css
+added     src/components/codes.css
+added     tests/visual/labels.spec.ts
+added     tests/visual/codes.spec.ts
 modified  planning/handoff.md
 modified  planning/progress.md
 modified  planning/phase-02-core-elements-forms-layout-utilities.md
@@ -45,20 +47,21 @@ modified  planning/plan.md
 build/phase-01/spectra.css
 build/phase-01/spectra.css.map
 build/phase-01/spectra.min.css
-build/migration/{layout,hero,navbar,typography,asian,tables,media,forms}/{inspection.json,legacy.css,candidate.css}
+build/migration/{layout,hero,navbar,typography,asian,tables,media,forms,labels,codes}/{inspection.json,legacy.css,candidate.css}
 ```
 
 이 변경 세트에는 새 의존성이 없고 `pnpm-lock.yaml`은 바뀌지 않았다.
 
 ## 마지막 검증 근거
 
-- `pnpm migrate:css verify forms --target src/components/forms.css`: 통과. 누락 클래스·media query·표준 속성이 없다.
-- `pnpm migrate:css verify <component> --target src/_<component>.scss`: layout/hero/navbar/typography/asian/tables/media/forms 모두 의도대로 종료 코드 1. 잔존 Sass와 breakpoint 불일치를 보고했다.
-- `pnpm test`: 2개 파일 12개 통과. source map의 `src/components/{typography,asian,tables,buttons,forms,media}.css` 포함 검사를 추가했다.
-- 실패 우선: forms CSS가 없는 번들에서 `tests/visual/forms.spec.ts` 6개 중 5개가 실패했다(외부 override 1건은 라이브러리 CSS가 없어도 통과).
-- `pnpm test:visual`: Chromium/Firefox/WebKit 123개 통과(buttons 12 + layout 15 + hero 12 + navbar 12 + typography 12 + asian 15 + tables 15 + media 12 + forms 6). forms는 기본·focus·placeholder·sizes·checked/indeterminate/active·disabled/readonly·validation·input group·token override·외부 override와 대표 pixel을 검증한다.
-- `pnpm check:phase1`: 통과. 경고 31건(레거시 show/hide의 의도된 `!important` 12건, typography 2건, forms의 legacy cascade 순서에서 발생하는 descending specificity 17건).
-- `pnpm build:phase1`: 통과. 일반 44,511바이트, 압축 38,190바이트, gzip 일반 7,331바이트(forms 이전 27,757/23,181/5,392).
+- `pnpm migrate:css verify labels --target src/components/labels.css`: 통과. 누락 클래스·media query·표준 속성이 없다.
+- `pnpm migrate:css verify codes --target src/components/codes.css`: 통과. 누락 클래스·media query·표준 속성이 없다.
+- `pnpm migrate:css verify <component> --target src/_<component>.scss`: layout/hero/navbar/typography/asian/tables/media/forms/labels/codes 모두 의도대로 종료 코드 1. 잔존 Sass와 breakpoint 불일치를 보고했다.
+- `pnpm test`: 2개 파일 12개 통과. source map의 `src/components/{typography,asian,tables,buttons,forms,labels,codes,media}.css` 포함 검사를 추가했다.
+- 실패 우선: labels/codes CSS가 없는 번들에서 `tests/visual/{labels,codes}.spec.ts` 24개 중 18개가 실패했다(후행 외부 override 6건은 라이브러리 CSS가 없어도 통과).
+- `pnpm test:visual`: Chromium/Firefox/WebKit 147개 통과(buttons 12 + layout 15 + hero 12 + navbar 12 + typography 12 + asian 15 + tables 15 + media 12 + forms 6 + labels 12 + codes 12). labels/codes는 변형·rounded·크기 상속·token override·외부 override·`::before` `attr(data-lang)`·인라인/블록 code와 대표 pixel을 검증한다.
+- `pnpm check:phase1`: 통과. 경고 31건(레거시 show/hide의 의도된 `!important` 12건, typography 2건, forms의 legacy cascade 순서에서 발생하는 descending specificity 17건). labels/codes는 신규 경고가 없다.
+- `pnpm build:phase1`: 통과. 일반 46,605바이트, 압축 40,021바이트, gzip 일반 7,551바이트(forms 시점 44,511/38,190/7,331).
 - WebKit에서 `:root` custom property가 있을 때 단일 `<select>`의 `getComputedStyle`이 rem 기반 값을 초기 16px root로 보고하는 현상을 확인했다. 실제 렌더링은 legacy와 byte-identical이므로 CSS 보정을 넣지 않았고, WebKit에 한해 select computed style 비교만 제외한 뒤 pixel 비교를 유지했다. 1.25배 CSS 보정은 실제 렌더링을 확대해 회귀를 만들었다.
 - `git diff --check`: 통과. `dist/spectre*.css`와 docs 사본은 변경하지 않았고 SHA-256 `c7f773ca3363bc5bd54b2849c0e37435c9e1afbb353fc1d79e16d422907fb924`가 유지됐다.
 - Playwright 세 브라우저 바이너리는 이전 세션에 설치했다.
@@ -77,14 +80,15 @@ build/migration/{layout,hero,navbar,typography,asian,tables,media,forms}/{inspec
 - Lightning CSS가 숫자를 float32·6자리로 직렬화한다. `8.33333333%`가 `8.33333%`로 저장돼 일부 viewport에서 column computed width가 layout unit(1/60~1/64px)만큼 어긋난다. layout 시각 계약은 0.05px 허용 오차를 쓰고 pixel은 byte 비교를 유지한다. 소스의 calc·custom property 형태로도 정밀도를 되돌릴 수 없다.
 - helper는 `src/spectre.scss`의 직접 import이면서 명확한 selector 경계가 있는 컴포넌트를 scaffold한다. keyframes로 시작하는 `animations`와 간접 aggregator인 `utilities`는 `legacy: null`이므로 수동 경계 조사 또는 phase 계약에 따른 도구 확장이 필요하다.
 - helper의 legacy 구간은 마지막 완전한 규칙에서 끝난다. 다음 컴포넌트의 부분 selector 클래스가 섞이지 않는다.
-- `typography`, `asian`, `tables`, `media`, `forms`는 기존 `src/components/`에 두었다. 문서 사이트는 이를 `elements`로 묶으므로 labels/codes 전환 후 `src/elements/` 분리 여부를 재검토한다.
+- `typography`, `asian`, `tables`, `media`, `forms`, `labels`, `codes`는 기존 `src/components/`에 두었다. 문서 사이트는 이를 `elements`로 묶으므로 Phase 02 종료 시 `src/elements/` 분리 여부를 재검토한다.
+- Firefox는 `small`의 80% font-size를 `12.7969px`로, WebKit은 중첩 `code`의 `line-height`를 `20.400002px`로 보고한다. labels/codes 계약은 절대값 대신 허용 오차와 line-height 비율(1.25/1.5)로 검증한다. 두 페이지 parity 비교는 같은 브라우저 안에서 이루어지므로 영향이 없다.
 - WebKit의 단일 `<select>` computed style 보고 차이는 실제 렌더링과 무관한 브라우저 동작이다. `forms.spec.ts`는 WebKit에서 select computed style만 제외하고 pixel 비교를 유지한다. CSS 보정으로 computed style을 맞추면 실제 렌더링이 확대되므로 금지한다. Safari 실기기에서도 같은 현상인지 확인하려면 Phase 04–05의 실기기 검증이 필요하다.
 - npm 식별자, 정식 배포 경로, `package.json`의 `main`, Gulp/Sass 제거는 Phase 06 전까지 확정하거나 변경하지 않는다.
 - 기존 라이선스·저작권·원작자 출처와 역사 기록을 유지한다.
 
 ## 즉시 재개할 작업
 
-[Phase 02 문서의 `다음 패킷: labels, codes`](phase-02-core-elements-forms-layout-utilities.md)를 테스트 우선으로 실행한다. 첫 작업은 `pnpm migrate:css inspect labels`와 `inspect codes`로 클래스·상태·Sass 의존성을 조사하고 패킷을 scaffold하는 것이다. 이어서 실패하는 visual 계약을 추가한 뒤 `src/components/{labels,codes}.css`를 평탄한 CSS로 작성해 `src/spectra.css`의 forms 뒤 media 앞에 import한다.
+[Phase 02 문서의 `다음 패킷: animations, utilities`](phase-02-core-elements-forms-layout-utilities.md)를 테스트 우선으로 실행한다. 두 항목은 helper의 `legacy: null` 대상이므로 `src/_animations.scss`의 keyframes·`animation` 사용처와 `src/utilities/*.scss`의 mixin·interpolation 확장 결과를 `dist/spectre.css`에서 직접 조사하는 것이 첫 작업이다. 이어서 실패하는 visual 계약을 추가한 뒤 평탄한 CSS로 전환하고 `src/spectra.css`의 navbar 뒤 legacy 순서로 import한다.
 
 Phase 02의 나머지 패킷 순서와 수용 조건·검증 명령은 Phase 02 문서를 따른다. Phase 03–06의 범위와 단계 전환 규칙은 [plan.md의 `이후 단계 실행 로드맵`](plan.md)을 따른다. 현재 패킷이나 phase가 완료되기 전 다음 범위로 자동 전환하지 않는다.
 

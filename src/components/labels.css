@@ -1,0 +1,42 @@
+/* Labels */
+.label {
+  background: var(--spectra-color-background-muted, #eef0f3);
+  border-radius: var(--spectra-border-radius, 0.1rem);
+  color: var(--spectra-color-text-soft, #455060);
+  display: inline-block;
+  line-height: 1.25;
+  padding: var(--spectra-space-half, 0.1rem) var(--spectra-space-1, 0.2rem);
+}
+
+/* Label rounded */
+.label.label-rounded {
+  border-radius: 5rem;
+  padding-left: var(--spectra-space-2, 0.4rem);
+  padding-right: var(--spectra-space-2, 0.4rem);
+}
+
+/* Label colors */
+.label.label-primary {
+  background: var(--spectra-color-primary, #5755d9);
+  color: var(--spectra-color-on-accent, #fff);
+}
+
+.label.label-secondary {
+  background: var(--spectra-color-secondary, #f1f1fc);
+  color: var(--spectra-color-primary, #5755d9);
+}
+
+.label.label-success {
+  background: var(--spectra-color-success, #32b643);
+  color: var(--spectra-color-on-accent, #fff);
+}
+
+.label.label-warning {
+  background: var(--spectra-color-warning, #ffb700);
+  color: var(--spectra-color-on-accent, #fff);
+}
+
+.label.label-error {
+  background: var(--spectra-color-error, #e85600);
+  color: var(--spectra-color-on-accent, #fff);
+}

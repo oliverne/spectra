@@ -1,6 +1,6 @@
 # Phase 02 — 기본 요소·forms·layout·utilities
 
-상태: 진행 중 (layout·hero·navbar·typography·asian·tables·media·forms 패킷 완료, 2026-10-21)
+상태: 진행 중 (layout·hero·navbar·typography·asian·tables·media·forms·labels·codes 패킷 완료, 2026-10-24)
 
 ## 목표
 
@@ -208,12 +208,52 @@ git diff --check
 - WebKit에서 `:root` custom property가 있을 때 단일 `<select>`의 `getComputedStyle`이 rem 기반 값을 초기 16px root로 보고하는 현상을 확인했다. 실제 렌더링은 legacy와 byte-identical이므로 CSS 보정을 넣지 않았고, WebKit에 한해 select computed style 비교만 제외한 뒤 pixel 비교를 유지했다. 1.25배 CSS 보정은 실제 렌더링을 확대해 오히려 회귀를 만들었다.
 - `dist/spectre*.css`와 docs 사본은 변경하지 않았고 SHA-256이 유지됐다.
 
-## 다음 패킷: labels, codes
+## 완료한 패킷: labels, codes (2026-10-24)
 
-1. `pnpm migrate:css inspect labels`/`inspect codes`로 클래스·상태·Sass 의존성과 legacy 구간을 조사하고 패킷을 scaffold한다.
-2. 실패하는 computed style·pixel·상태·token scope·외부 override 계약을 `tests/visual/{labels,codes}.spec.ts`에 추가한다.
-3. `src/components/{labels,codes}.css`를 평탄하게 작성하고 `src/spectra.css`의 forms 뒤, media 앞에 import한다.
-4. forms와 같은 검증 순서를 실행한다.
+1. `pnpm migrate:css inspect labels`/`inspect codes`/`scaffold`로 클래스·mixin include·변수 참조와 legacy 구간을 조사했다. labels는 `.label`부터 `codes` 직전, codes는 `code`부터 `media` 직전까지다. 두 컴포넌트 모두 media query와 상태 선택자가 없다.
+2. `tests/visual/{labels,codes}.spec.ts`에 각 4개씩 실패하는 계약을 먼저 추가했다.
+3. `src/components/{labels,codes}.css`를 평탄한 CSS로 작성하고 `src/spectra.css`의 forms 뒤, media 앞에 import했다.
+4. `src/tokens.css`에 `--spectra-color-text-soft`, `--spectra-color-warning`, `--spectra-color-code`, `--spectra-color-code-surface`를 추가했다.
+
+labels, codes 수용 조건:
+
+- `.label`의 기본 배경·텍스트·radius·padding·`inline-block`과 `font-size` 미지정(상속) 동작을 보존한다.
+- `.label.label-rounded`의 5rem radius와 좌우 `--spectra-space-2` padding을 보존한다.
+- `.label.label-primary`/`secondary`/`success`/`warning`/`error`의 배경·전경 색과 cascade 순서를 보존한다.
+- `code` 요소의 `--spectra-color-code-surface` 배경, `--spectra-color-code` 전경, `font-size: 85%`, radius, spacing을 보존한다.
+- `.code`의 `position: relative`·`--spectra-color-text`, `.code::before`의 `attr(data-lang)`·`--spectra-font-size-sm`·우상단 `--spectra-space-{half,2}` 위치, `.code code`의 block·`line-height: 1.5`·`overflow-x: auto`·`--spectra-space-5` padding·`width: 100%`를 보존한다.
+- 전역·중첩 token scope와 후행 외부 override, 세 브라우저 computed style·pixel parity를 검증한다.
+
+검증 순서:
+
+```sh
+pnpm migrate:css verify labels --target src/components/labels.css
+pnpm migrate:css verify codes --target src/components/codes.css
+pnpm check:phase1
+pnpm build:phase1
+pnpm test
+pnpm test:visual
+git diff --check
+```
+
+결과 (2026-10-24):
+
+- 두 `verify` 모두 통과(`ok: true`, 누락 클래스·media query·표준 속성 없음). 원본 `src/_{labels,codes}.scss` negative verify는 의도대로 종료 코드 1로 실패한다.
+- 실패 우선: labels/codes CSS가 없는 번들의 `{labels,codes}.spec.ts` 24개 중 18개가 실패했고, 후행 외부 override 6개만 통과했다. 변환 후 세 브라우저 24개가 모두 통과했다.
+- `pnpm test:visual` 147개 통과(기존 123 + labels 12 + codes 12).
+- `pnpm test` 12개 통과. `tests/build/css-build.test.ts`의 source map 검사 대상에 `src/components/{labels,codes}.css`를 추가했다.
+- `pnpm check:phase1` 통과, 경고 31건 유지(신규 CSS 경고 없음).
+- 일반 46,605바이트, 압축 40,021바이트, gzip 일반 7,551바이트(forms 시점 44,511/38,190/7,331).
+- `dist/spectre*.css`와 docs 사본은 변경하지 않았고 SHA-256이 유지됐다.
+- Firefox는 `small`의 80% font-size를 `12.7969px`로 보고하고 WebKit은 중첩 `code`의 `line-height`를 `20.400002px`로 보고한다. labels/codes 계약은 font-size·line-height 절대값 대신 허용 오차와 비율(1.25/1.5)로 검증한다. parity 비교는 두 페이지의 동일 브라우저 computed style이므로 영향이 없다.
+
+## 다음 패킷: animations, utilities
+
+1. `animations`는 keyframes로 시작해 helper의 `legacy: null` 경계가 없다. `src/_animations.scss`와 `dist/spectre.css`의 keyframes·`animation` 사용처를 직접 조사하고, keyframes 이름과 timing을 보존한다.
+2. `utilities`는 간접 aggregator다. `src/utilities/*.scss`의 mixin·interpolation 확장 결과를 `dist/spectre.css`에서 확인하고 생성 클래스 전체 범위를 검사한다.
+3. 실패하는 computed style·pixel·token scope·외부 override 계약을 `tests/visual/{animations,utilities}.spec.ts`에 추가한다.
+4. `src/utilities/`와 `src/components/animations.css`(또는 phase 계약에 맞는 위치)를 평탄하게 작성하고 `src/spectra.css`의 navbar 뒤에 legacy 순서대로 import한다.
+5. labels/codes와 같은 검증 순서를 실행한다.
 
 ## 변환 계약
 
@@ -236,13 +276,14 @@ git diff --check
 
 ## 현재 결과
 
-- 마이그레이션 도구와 `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms` 패킷을 구현하고 검증했다.
+- 마이그레이션 도구와 `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms`, `labels`, `codes` 패킷을 구현하고 검증했다.
 - 기존 `spectra-css-migration` 스킬이 도구의 inspect/scaffold/verify 흐름과 정적 검사 한계를 안내한다.
 - `layout` scaffold는 기존 `.container`부터 `.hero` 직전까지 추출됐고, `src/layout/layout.css`가 정적 검사를 통과했다. 원본 `_layout.scss`에 대한 negative verify는 남은 Sass와 breakpoint 불일치를 보고하며 종료 코드 1로 실패한다.
 - `hero` scaffold는 `.hero`부터 `.navbar` 직전까지, `navbar` scaffold는 `.navbar`부터 `.accordions` 직전까지 추출됐다. 두 `src/layout/*.css`가 정적 검사를 통과했다.
 - `typography` scaffold는 `h1`부터 `html:lang(zh)` 직전까지, `asian`은 `html:lang(zh)`부터 `.table` 직전까지, `tables`는 `.table`부터 `.btn` 직전까지, `media`는 `.img-responsive`부터 `.container` 직전까지 추출됐다. 네 `src/components/*.css`가 정적 검사를 통과했다.
 - `forms` scaffold는 `.form-group`부터 `labels` 직전까지 추출됐고 `src/components/forms.css`가 정적 검사를 통과했다. 원본 `_forms.scss` negative verify는 종료 코드 1로 실패한다.
-- 실패 우선 증거: layout CSS가 없는 번들에서 `tests/visual/layout.spec.ts` 5개 중 4개가 실패했고, hero/navbar CSS가 없는 번들에서 `hero.spec.ts`·`navbar.spec.ts` 8개 중 6개가 실패했다. typography/asian/tables/media CSS가 없는 번들에서 네 신규 spec 18개 중 15개가 실패했다. forms CSS가 없는 번들에서 `forms.spec.ts` 6개 중 5개가 실패했다. 변환 후 세 브라우저에서 layout 15개, hero 12개, navbar 12개, typography 12개, asian 15개, tables 15개, media 12개, forms 6개가 모두 통과했다.
-- `pnpm check:phase1`(경고 31건: 레거시 show/hide의 의도된 `!important` 12건, typography 2건, forms descending specificity 17건), `pnpm test` 12개, `pnpm build:phase1`, `pnpm test:visual` 123개, `git diff --check`가 통과했다.
+- `labels` scaffold는 `.label`부터 `codes` 직전까지, `codes` scaffold는 `code`부터 `media` 직전까지 추출됐고 `src/components/{labels,codes}.css`가 정적 검사를 통과했다.
+- 실패 우선 증거: layout CSS가 없는 번들에서 `tests/visual/layout.spec.ts` 5개 중 4개가 실패했고, hero/navbar CSS가 없는 번들에서 `hero.spec.ts`·`navbar.spec.ts` 8개 중 6개가 실패했다. typography/asian/tables/media CSS가 없는 번들에서 네 신규 spec 18개 중 15개가 실패했다. forms CSS가 없는 번들에서 `forms.spec.ts` 6개 중 5개가 실패했다. labels/codes CSS가 없는 번들에서 두 신규 spec 24개 중 18개가 실패했다. 변환 후 세 브라우저에서 layout 15개, hero 12개, navbar 12개, typography 12개, asian 15개, tables 15개, media 12개, forms 6개, labels 12개, codes 12개가 모두 통과했다.
+- `pnpm check:phase1`(경고 31건: 레거시 show/hide의 의도된 `!important` 12건, typography 2건, forms descending specificity 17건), `pnpm test` 12개, `pnpm build:phase1`, `pnpm test:visual` 147개, `git diff --check`가 통과했다.
 - `dist/spectre*.css`와 `docs/dist/spectre*.css`는 변경하지 않았다. 레거시 일반 CSS SHA-256은 `c7f773ca3363bc5bd54b2849c0e37435c9e1afbb353fc1d79e16d422907fb924` 그대로다.
-- Phase 02의 나머지 패킷(labels, codes, animations, utilities)은 아직 시작하지 않았다.
+- Phase 02의 나머지 패킷(animations, utilities)은 아직 시작하지 않았다.

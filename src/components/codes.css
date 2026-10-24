@@ -1,0 +1,34 @@
+/* Codes */
+code {
+  background: var(--spectra-color-code-surface, #fcf2f2);
+  border-radius: var(--spectra-border-radius, 0.1rem);
+  color: var(--spectra-color-code, #d73e48);
+  font-size: 85%;
+  line-height: 1.25;
+  padding: var(--spectra-space-half, 0.1rem) var(--spectra-space-1, 0.2rem);
+}
+
+.code {
+  border-radius: var(--spectra-border-radius, 0.1rem);
+  color: var(--spectra-color-text, #3b4351);
+  position: relative;
+}
+
+.code::before {
+  color: var(--spectra-color-text-subtle, #bcc3ce);
+  content: attr(data-lang);
+  font-size: var(--spectra-font-size-sm, 0.7rem);
+  position: absolute;
+  right: var(--spectra-space-2, 0.4rem);
+  top: var(--spectra-space-half, 0.1rem);
+}
+
+.code code {
+  background: var(--spectra-color-background-subtle, #f7f8f9);
+  color: inherit;
+  display: block;
+  line-height: 1.5;
+  overflow-x: auto;
+  padding: var(--spectra-space-5, 1rem);
+  width: 100%;
+}

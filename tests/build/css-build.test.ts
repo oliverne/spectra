@@ -24,6 +24,8 @@ describe("Phase 1 CSS build", () => {
       "src/components/tables.css",
       "src/components/buttons.css",
       "src/components/forms.css",
+      "src/components/labels.css",
+      "src/components/codes.css",
       "src/components/media.css",
       "src/layout/layout.css",
       "src/layout/hero.css",
