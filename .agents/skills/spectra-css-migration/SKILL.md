@@ -39,14 +39,15 @@ Use the repository helper for direct components of `src/spectre.scss`:
 ```sh
 pnpm migrate:css inspect <component>
 pnpm migrate:css scaffold <component>
-pnpm migrate:css verify <component> --target <css-file>
+pnpm migrate:css verify <component> --target <css-file> [--target <css-file>...] \
+  [--legacy-start <selector>] [--legacy-end <selector>]
 ```
 
 - `inspect` reports variables, mixins, dynamic Sass constructs, direct source classes, and the matching checked-in legacy CSS slice.
 - `scaffold` writes `inspection.json`, `legacy.css`, and `candidate.css` under ignored `build/migration/<component>/`. It refuses to overwrite an existing packet. Treat the candidate as a review draft copied from the legacy bundle, not converted source.
 - `verify` checks CSS syntax, unresolved Sass, expanded legacy class coverage, media queries, and standard property coverage. A passing report is static coverage evidence only; it does not establish cascade, token, computed-style, or visual parity.
 
-The helper intentionally rejects indirect aggregator partials and ambiguous slices. Inspect those sources manually or extend the active phase contract before changing the helper. Do not weaken the checks to accept an incomplete conversion.
+The helper intentionally rejects indirect aggregator partials and ambiguous slices. For those, verify an explicit legacy region with `--legacy-start`/`--legacy-end` and repeat `--target` for split source files; the report also checks `@keyframes` names. Review the region boundaries yourself and keep them in the phase document. Do not weaken the checks to accept an incomplete conversion.
 
 ## 3. Capture the legacy contract
 

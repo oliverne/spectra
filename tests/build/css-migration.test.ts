@@ -110,6 +110,48 @@ describe("CSS migration helper", () => {
     expect(report.missingProperties).toEqual([]);
   });
 
+  test("verifies an explicit legacy range for at-rule and aggregator components", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "spectra-migration-range-"));
+
+    const animationsTarget = path.join(directory, "animations.css");
+    await writeFile(
+      animationsTarget,
+      "@keyframes loading { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }\n",
+    );
+    const animations = await verifyComponent("animations", animationsTarget, {
+      legacyStart: "@keyframes loading",
+      legacyEnd: ".text-primary",
+    });
+    expect(animations.missingKeyframes).toEqual(["slide-down"]);
+    expect(animations.ok).toBe(false);
+
+    const slideTarget = path.join(directory, "slide-down.css");
+    await writeFile(
+      slideTarget,
+      "@keyframes slide-down { 0% { opacity: 0; transform: translateY(-1.6rem); } 100% { opacity: 1; transform: translateY(0); } }\n",
+    );
+    const combined = await verifyComponent("animations", [animationsTarget, slideTarget], {
+      legacyStart: "@keyframes loading",
+      legacyEnd: ".text-primary",
+    });
+    expect(combined.missingKeyframes).toEqual([]);
+    expect(combined.targets).toHaveLength(2);
+    expect(combined.ok).toBe(true);
+
+    const utilitiesTarget = path.join(directory, "utilities.css");
+    await writeFile(utilitiesTarget, ".text-primary { color: #5755d9 !important; }\n");
+    const utilities = await verifyComponent("utilities", utilitiesTarget, {
+      legacyStart: ".text-primary",
+    });
+    expect(utilities.missingClasses).toEqual(expect.arrayContaining(["bg-primary", "loading"]));
+    expect(utilities.missingKeyframes).toEqual([]);
+    expect(utilities.ok).toBe(false);
+
+    await expect(
+      verifyComponent("utilities", utilitiesTarget, { legacyStart: ".does-not-exist" }),
+    ).rejects.toThrow("Legacy start selector not found");
+  });
+
   test("rejects paths outside the Sass source tree", async () => {
     await expect(inspectComponent("../package")).rejects.toThrow("Invalid component name");
   });

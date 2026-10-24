@@ -20,6 +20,7 @@ type ConstructCounts = {
 
 type LegacyInspection = {
   classes: string[];
+  keyframes: string[];
   mediaQueries: string[];
   nextComponent: string | null;
   path: string;
@@ -46,11 +47,12 @@ export type ComponentInspection = {
 export type VerificationReport = {
   component: string;
   missingClasses: string[];
+  missingKeyframes: string[];
   missingMediaQueries: string[];
   missingProperties: string[];
   ok: boolean;
   syntaxError: string | null;
-  target: string;
+  targets: string[];
   unresolvedSass: string[];
   warnings: string[];
 };
@@ -100,6 +102,12 @@ function extractProperties(source: string) {
     .map((match) => match[1])
     .filter((property) => !/^-(?:moz|ms|o|webkit)-/.test(property));
   return sortedUnique(properties);
+}
+
+function extractKeyframes(source: string) {
+  return sortedUnique(
+    [...stripComments(source).matchAll(/@keyframes\s+([A-Za-z_][\w-]*)/g)].map((match) => match[1]),
+  );
 }
 
 function firstSelector(source: string) {
@@ -258,6 +266,47 @@ async function legacySlice(component: string) {
   };
 }
 
+async function legacyRangeSlice(startSelector: string, endSelector?: string) {
+  const legacyBundle = await readFile(legacyBundlePath, "utf8");
+  const start = selectorOffset(legacyBundle, startSelector);
+  if (start === -1) {
+    throw new Error(`Legacy start selector not found: ${startSelector}`);
+  }
+  const end =
+    endSelector === undefined
+      ? legacyBundle.length
+      : selectorOffset(legacyBundle, endSelector, start + 1);
+  if (end === -1) {
+    throw new Error(`Legacy end selector not found: ${endSelector}`);
+  }
+
+  const slice = legacyBundle.slice(start, end);
+  const lastCompleteRule = slice.lastIndexOf("}");
+  const completeSlice = lastCompleteRule === -1 ? slice : slice.slice(0, lastCompleteRule + 1);
+
+  return {
+    css: `${completeSlice.trim()}\n`,
+    nextComponent: endSelector ?? null,
+    startSelector,
+  };
+}
+
+function describeLegacy(legacy: {
+  css: string;
+  nextComponent: string | null;
+  startSelector: string;
+}): LegacyInspection {
+  return {
+    classes: extractClasses(legacy.css),
+    keyframes: extractKeyframes(legacy.css),
+    mediaQueries: extractMediaQueries(legacy.css),
+    nextComponent: legacy.nextComponent,
+    path: relativeToRepository(legacyBundlePath),
+    properties: extractProperties(legacy.css),
+    startSelector: legacy.startSelector,
+  };
+}
+
 function inspectCounts(source: string): ConstructCounts {
   return {
     colorFunctions: matches(source, /\b(?:darken|lighten|lightness|rgba)\s*\(/g),
@@ -307,16 +356,7 @@ export async function inspectComponent(component: string): Promise<ComponentInsp
 
   return {
     component,
-    legacy: legacy
-      ? {
-          classes: extractClasses(legacy.css),
-          mediaQueries: extractMediaQueries(legacy.css),
-          nextComponent: legacy.nextComponent,
-          path: relativeToRepository(legacyBundlePath),
-          properties: extractProperties(legacy.css),
-          startSelector: legacy.startSelector,
-        }
-      : null,
+    legacy: legacy ? describeLegacy(legacy) : null,
     legacyUnavailableReason,
     manualReview: manualReviewFor(counts),
     schemaVersion: 1,
@@ -408,56 +448,83 @@ function expandInsetShorthand(source: string, properties: string[]) {
 
 export async function verifyComponent(
   component: string,
-  targetPath: string,
+  targetPaths: string | string[],
+  options: { legacyStart?: string; legacyEnd?: string } = {},
 ): Promise<VerificationReport> {
   const inspection = await inspectComponent(component);
-  if (!inspection.legacy) {
+  const legacy = options.legacyStart
+    ? describeLegacy(await legacyRangeSlice(options.legacyStart, options.legacyEnd))
+    : inspection.legacy;
+  if (!legacy) {
     throw new Error(
-      `Cannot verify ${component}: it is not a direct component slice in src/spectre.scss`,
+      `Cannot verify ${component}: it is not a direct component slice in src/spectre.scss. Pass --legacy-start (and optionally --legacy-end) to verify an explicit region.`,
     );
   }
 
-  const resolvedTarget = path.resolve(repositoryRoot, targetPath);
-  const target = await readFile(resolvedTarget, "utf8");
-  let normalizedTarget = target;
+  const resolvedTargets = (Array.isArray(targetPaths) ? targetPaths : [targetPaths]).map(
+    (targetPath) => path.resolve(repositoryRoot, targetPath),
+  );
+  const targets = await Promise.all(resolvedTargets.map((target) => readFile(target, "utf8")));
+  const target = targets.join("\n");
+  const normalizedParts: string[] = [];
   let syntaxError: string | null = null;
-  try {
-    normalizedTarget = transform({
-      code: Buffer.from(target),
-      filename: resolvedTarget,
-      minify: false,
-    }).code.toString();
-  } catch (error) {
-    syntaxError = error instanceof Error ? error.message : String(error);
+  for (const [index, resolvedTarget] of resolvedTargets.entries()) {
+    try {
+      normalizedParts.push(
+        transform({
+          code: Buffer.from(targets[index]),
+          filename: resolvedTarget,
+          minify: false,
+        }).code.toString(),
+      );
+    } catch (error) {
+      syntaxError ??= error instanceof Error ? error.message : String(error);
+      normalizedParts.push(targets[index]);
+    }
   }
+  const normalizedTarget = normalizedParts.join("\n");
 
   const unresolvedSass = unresolvedSassConstructs(target);
-  const missingClasses = difference(inspection.legacy.classes, extractClasses(target));
-  const missingMediaQueries = difference(
-    inspection.legacy.mediaQueries,
-    extractMediaQueries(target),
-  );
+  const missingClasses = difference(legacy.classes, extractClasses(target));
+  const missingKeyframes = difference(legacy.keyframes, extractKeyframes(normalizedTarget));
+  const missingMediaQueries = difference(legacy.mediaQueries, extractMediaQueries(target));
   const missingProperties = difference(
-    inspection.legacy.properties,
+    legacy.properties,
     expandInsetShorthand(normalizedTarget, extractProperties(normalizedTarget)),
   );
 
   return {
     component,
     missingClasses,
+    missingKeyframes,
     missingMediaQueries,
     missingProperties,
     ok:
       syntaxError === null &&
       unresolvedSass.length === 0 &&
       missingClasses.length === 0 &&
+      missingKeyframes.length === 0 &&
       missingMediaQueries.length === 0 &&
       missingProperties.length === 0,
     syntaxError,
-    target: relativeToRepository(resolvedTarget),
+    targets: resolvedTargets.map((target) => relativeToRepository(target)),
     unresolvedSass,
     warnings: inspection.manualReview,
   };
+}
+
+function optionValues(args: string[], option: string) {
+  const values: string[] = [];
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] !== option) continue;
+    const value = args[index + 1];
+    if (!value || value.startsWith("--")) {
+      throw new Error(`Missing value for ${option}`);
+    }
+    values.push(value);
+    index += 1;
+  }
+  return values;
 }
 
 function optionValue(args: string[], option: string) {
@@ -475,7 +542,7 @@ function usage() {
     "Usage:",
     "  pnpm migrate:css inspect <component>",
     "  pnpm migrate:css scaffold <component> [--output <directory>]",
-    "  pnpm migrate:css verify <component> --target <css-file>",
+    "  pnpm migrate:css verify <component> --target <css-file> [--target <css-file>...] [--legacy-start <selector>] [--legacy-end <selector>]",
   ].join("\n");
 }
 
@@ -495,11 +562,16 @@ async function runCli() {
     return;
   }
   if (command === "verify") {
-    const target = optionValue(args, "--target");
-    if (!target) {
+    const targets = optionValues(args, "--target");
+    if (targets.length === 0) {
       throw new Error(`Missing --target\n${usage()}`);
     }
-    const report = await verifyComponent(component, target);
+    const legacyStart = optionValue(args, "--legacy-start");
+    const legacyEnd = optionValue(args, "--legacy-end");
+    if (legacyEnd && !legacyStart) {
+      throw new Error(`--legacy-end requires --legacy-start\n${usage()}`);
+    }
+    const report = await verifyComponent(component, targets, { legacyStart, legacyEnd });
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
     if (!report.ok) process.exitCode = 1;
     return;
