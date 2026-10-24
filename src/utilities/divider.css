@@ -1,0 +1,53 @@
+/* Divider */
+.divider,
+.divider-vert {
+  display: block;
+  position: relative;
+}
+
+.divider[data-content]::after,
+.divider-vert[data-content]::after {
+  background: var(--spectra-color-background, #fff);
+  color: var(--spectra-color-text-subtle, #bcc3ce);
+  content: attr(data-content);
+  display: inline-block;
+  font-size: var(--spectra-font-size-sm, 0.7rem);
+  padding: 0 var(--spectra-space-2, 0.4rem);
+  transform: translateY(
+    calc(var(--spectra-border-width, 0.05rem) - var(--spectra-font-size-sm, 0.7rem))
+  );
+}
+
+.divider {
+  border-top: var(--spectra-border-width, 0.05rem) solid var(--spectra-color-border-light, #f1f3f5);
+  height: var(--spectra-border-width, 0.05rem);
+  margin: var(--spectra-space-2, 0.4rem) 0;
+}
+
+.divider[data-content] {
+  margin: var(--spectra-space-4, 0.8rem) 0;
+}
+
+.divider-vert {
+  display: block;
+  padding: var(--spectra-space-4, 0.8rem);
+}
+
+.divider-vert::before {
+  border-left: var(--spectra-border-width, 0.05rem) solid var(--spectra-color-border, #dadee4);
+  bottom: var(--spectra-space-2, 0.4rem);
+  content: "";
+  display: block;
+  left: 50%;
+  position: absolute;
+  top: var(--spectra-space-2, 0.4rem);
+  transform: translateX(-50%);
+}
+
+.divider-vert[data-content]::after {
+  left: 50%;
+  padding: var(--spectra-space-1, 0.2rem) 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

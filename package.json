@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build:phase1": "node scripts/build-css.mts",
-    "check:phase1": "biome check biome.json package.json playwright.config.mts vitest.config.mts scripts tests src/spectra.css src/tokens.css src/base src/components src/layout",
+    "check:phase1": "biome check biome.json package.json playwright.config.mts vitest.config.mts scripts tests src/spectra.css src/tokens.css src/base src/components src/layout src/utilities",
     "migrate:css": "node scripts/css-migration.mts",
     "test": "vitest run",
     "test:visual": "pnpm build:phase1 && playwright test -c playwright.config.mts"

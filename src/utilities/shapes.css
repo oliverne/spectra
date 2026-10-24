@@ -1,0 +1,8 @@
+/* Shapes */
+.s-rounded {
+  border-radius: var(--spectra-border-radius, 0.1rem);
+}
+
+.s-circle {
+  border-radius: 50%;
+}

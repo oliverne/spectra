@@ -1,6 +1,6 @@
 # Phase 02 — 기본 요소·forms·layout·utilities
 
-상태: 진행 중 (layout·hero·navbar·typography·asian·tables·media·forms·labels·codes 패킷 완료, 2026-10-24)
+상태: 완료 (2026-10-24). layout·hero·navbar·typography·asian·tables·media·forms·labels·codes·animations·utilities 패킷 완료.
 
 ## 목표
 
@@ -14,7 +14,8 @@ Phase 01의 Pure CSS 빌드와 회귀 계약을 기본 요소, forms, layout, ut
 
 - `pnpm migrate:css inspect <component>`가 직접 import된 SCSS 컴포넌트의 변수, mixin, 동적 Sass 구문, 공개 클래스와 기존 배포 CSS 구간을 JSON으로 출력한다.
 - `pnpm migrate:css scaffold <component>`가 무시되는 `build/migration/<component>/`에 검사 결과, 기존 CSS 구간, 편집용 후보를 생성한다. 기존 패킷은 덮어쓰지 않는다.
-- `pnpm migrate:css verify <component> --target <css-file>`가 CSS 구문, 남은 Sass 구문, 기존 클래스, media query와 표준 속성의 정적 범위를 검사한다.
+- `pnpm migrate:css verify <component> --target <css-file>`가 CSS 구문, 남은 Sass 구문, 기존 클래스, keyframe 이름, media query와 표준 속성의 정적 범위를 검사한다.
+- 경계가 없는 keyframes·aggregator는 `--legacy-start <selector>`/`--legacy-end <selector>`로 legacy 구간을 명시하고, 분할 소스는 `--target`을 반복해 합산 검사한다.
 - 정적 검사는 parity 완료 판정이 아니다. 토큰 의미, cascade, computed style과 픽셀 결과는 컴포넌트별 테스트에서 확인한다.
 
 ### 이후 컴포넌트 작업
@@ -247,15 +248,47 @@ git diff --check
 - `dist/spectre*.css`와 docs 사본은 변경하지 않았고 SHA-256이 유지됐다.
 - Firefox는 `small`의 80% font-size를 `12.7969px`로 보고하고 WebKit은 중첩 `code`의 `line-height`를 `20.400002px`로 보고한다. labels/codes 계약은 font-size·line-height 절대값 대신 허용 오차와 비율(1.25/1.5)로 검증한다. parity 비교는 두 페이지의 동일 브라우저 computed style이므로 영향이 없다.
 
-## 다음 패킷: animations, utilities
+## 완료한 패킷: animations, utilities (2026-10-24)
 
-1. `animations`는 keyframes로 시작해 helper의 `legacy: null` 경계가 없다. `src/_animations.scss`와 `dist/spectre.css`의 keyframes·`animation` 사용처를 직접 조사하고, keyframes 이름과 timing을 보존한다.
-2. `utilities`는 간접 aggregator다. `src/utilities/*.scss`의 mixin·interpolation 확장 결과를 `dist/spectre.css`에서 확인하고 생성 클래스 전체 범위를 검사한다.
-3. 실패하는 computed style·pixel·token scope·외부 override 계약을 `tests/visual/{animations,utilities}.spec.ts`에 추가한다.
-4. `src/utilities/`와 `src/components/animations.css`(또는 phase 계약에 맞는 위치)를 평탄하게 작성하고 `src/spectra.css`의 navbar 뒤에 legacy 순서대로 import한다.
-5. labels/codes와 같은 검증 순서를 실행한다.
+1. `pnpm migrate:css inspect animations`/`inspect utilities`는 두 항목 모두 `legacy: null`을 보고했다. keyframes로 시작하는 `animations`와 간접 aggregator인 `_utilities.scss`에는 selector 경계가 없으므로 legacy 구간을 직접 조사했다.
+2. 도구를 확장했다. `verify`가 `--legacy-start`/`--legacy-end`로 명시 구간을 검사하고, `--target` 반복으로 분할 소스를 합산하며, `@keyframes` 이름 누락을 보고한다. `describeLegacy`를 추출해 inspect와 range verify가 같은 legacy 표현을 쓴다.
+3. `tests/visual/animations.spec.ts` 4개, `tests/visual/utilities.spec.ts` 8개 계약을 먼저 추가했다. animations는 keyframes 값·`.loading`의 기하·border·z-index·token scope를, utilities는 색상·링크 hover/focus·display·divider·position·spacing·shape·text·`!important`·외부 override를 검증한다.
+4. `src/utilities/{animations,colors,cursors,display,divider,loading,position,shapes,text}.css`를 평탄한 CSS로 작성하고 `src/spectra.css`의 navbar 뒤에 legacy 순서대로 import했다. `check:phase1` 대상에 `src/utilities`를 추가했다.
+5. `src/tokens.css`에 `--spectra-color-border-light`와 `--spectra-color-text-{primary,secondary,gray,light,dark,success,warning,error}{,-hover,-visited}` 24개를 추가했다. base 값은 legacy Sass 계산 결과를 그대로 옮겼고, 텍스트 유틸리티 상태는 유틸리티별로 재정의 가능한 토큰으로 명시했다.
 
-## 변환 계약
+animations, utilities 수용 조건:
+
+- `loading`(0→360deg)과 `slide-down`(-1.6rem→0, opacity 0→1) keyframe 이름과 값·timing을 보존한다.
+- `.loading`의 `color: transparent !important`, `pointer-events`, `min-height`, `.loading::after`의 회전 border·절반 위치·음수 margin·z-index, `.loading-lg` 크기를 보존한다.
+- `.text-*` 8종의 기본·`a:hover`/`:focus`·`:visited` 색, `.bg-*` 7종의 배경과 대비 전경을 보존한다.
+- cursor 6종, display/visibility/hide·assistive/hide 텍스트, divider·divider-vert와 `[data-content]`, clearfix·float·position·centered, `m/mb/ml/mr/mt/mx/my-{0,1,2}`와 `p/...` spacing, `s-rounded`/`s-circle`, text 정렬·변형·크기·ellipsis·break를 보존한다.
+- 레거시 `!important` 유틸리티 의미(인라인 style보다 우선)와 후행 외부 override 동작을 유지한다.
+- 전역·중첩 token scope, 세 브라우저 computed style·pixel parity를 검증한다.
+
+검증 순서:
+
+```sh
+pnpm migrate:css verify animations --target src/utilities/animations.css --legacy-start "@keyframes loading" --legacy-end ".text-primary"
+pnpm migrate:css verify utilities --target src/utilities/colors.css --target src/utilities/cursors.css --target src/utilities/display.css --target src/utilities/divider.css --target src/utilities/loading.css --target src/utilities/position.css --target src/utilities/shapes.css --target src/utilities/text.css --legacy-start ".text-primary"
+pnpm check:phase1
+pnpm build:phase1
+pnpm test
+pnpm test:visual
+git diff --check
+```
+
+결과 (2026-10-24):
+
+- 두 `verify` 모두 통과(`ok: true`, 누락 클래스·keyframe·media query·표준 속성 없음). `tests/build/css-migration.test.ts`에 range verify·keyframe 누락·다중 target·잘못된 start selector 회귀 검사를 추가했다.
+- 실패 우선: animations/utilities CSS가 없는 번들의 두 spec 36개 중 33개가 실패했고, 라이브러리 CSS 없이도 성립하는 외부 override 3개만 통과했다. 변환 후 세 브라우저 36개가 모두 통과했다.
+- `pnpm test:visual` 183개 통과(기존 147 + animations 12 + utilities 24).
+- `pnpm test` 13개 통과(css-build 5 + css-migration 8). source map 검사 대상에 `src/utilities/*.css` 9개를 추가했다.
+- `pnpm check:phase1` 통과, 경고 108건(기존 31건 + utilities의 레거시 `!important` 77건). utilities 경고는 레거시 의미 보존 결과다.
+- 일반 58,672바이트, 압축 50,214바이트, gzip 일반 9,337바이트(labels/codes 시점 46,605/40,021/7,551).
+- Firefox는 `text-*`의 em font-size를 `19.1875px`로, WebKit은 `19.200001px`로 보고한다. 유틸리티 계약은 `toBeCloseTo` 허용 오차로 검증한다. `:visited`는 브라우저가 computed style을 숨기므로 규칙·토큰 존재를 정적으로 확인하고, hover/focus는 실제 상태로 비교한다.
+- `dist/spectre*.css`와 docs 사본은 변경하지 않았고 SHA-256이 유지됐다.
+
+## 변환 계약## 변환 계약
 
 - 도구가 생성한 `candidate.css`는 체크인된 `dist/spectre.css`의 작업용 사본이다. 그대로 `src/`에 복사하지 않고 불필요한 구형 접두사와 정적 테마 값을 검토한다.
 - nesting, mixin, placeholder와 고정 반복 범위는 최종 소스에서 평탄한 CSS로 남긴다. 변환 도구를 배포 빌드에 연결하거나 CSS 생성 DSL로 사용하지 않는다.
@@ -272,11 +305,12 @@ git diff --check
 - 경로 순회를 거부하고 저장소 source 및 기존 배포물을 수정하지 않는다.
 - legacy 구간은 마지막 완전한 규칙에서 끝나 다음 컴포넌트의 부분 selector 클래스를 포함하지 않는다(`navbar`→`accordions` 회귀 테스트).
 - `inset` 축약은 Lightning CSS가 `top/right/bottom/left`를 접은 결과로 인정해 물리 longhand 커버리지로 계산한다(`media` 회귀 테스트).
+- selector 경계가 없는 구간은 `--legacy-start`/`--legacy-end`로 검사하고, 분할 파일은 `--target` 반복으로 합산한다. `@keyframes` 이름 누락은 실패로 계산한다(`animations`·`utilities` 회귀 테스트).
 - `pnpm check:phase1`, `pnpm test`, `pnpm build:phase1`, `git diff --check`가 통과한다.
 
 ## 현재 결과
 
-- 마이그레이션 도구와 `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms`, `labels`, `codes` 패킷을 구현하고 검증했다.
+- 마이그레이션 도구와 Phase 02의 모든 패킷(`layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms`, `labels`, `codes`, `animations`, `utilities`)을 구현하고 검증했다.
 - 기존 `spectra-css-migration` 스킬이 도구의 inspect/scaffold/verify 흐름과 정적 검사 한계를 안내한다.
 - `layout` scaffold는 기존 `.container`부터 `.hero` 직전까지 추출됐고, `src/layout/layout.css`가 정적 검사를 통과했다. 원본 `_layout.scss`에 대한 negative verify는 남은 Sass와 breakpoint 불일치를 보고하며 종료 코드 1로 실패한다.
 - `hero` scaffold는 `.hero`부터 `.navbar` 직전까지, `navbar` scaffold는 `.navbar`부터 `.accordions` 직전까지 추출됐다. 두 `src/layout/*.css`가 정적 검사를 통과했다.
@@ -284,6 +318,6 @@ git diff --check
 - `forms` scaffold는 `.form-group`부터 `labels` 직전까지 추출됐고 `src/components/forms.css`가 정적 검사를 통과했다. 원본 `_forms.scss` negative verify는 종료 코드 1로 실패한다.
 - `labels` scaffold는 `.label`부터 `codes` 직전까지, `codes` scaffold는 `code`부터 `media` 직전까지 추출됐고 `src/components/{labels,codes}.css`가 정적 검사를 통과했다.
 - 실패 우선 증거: layout CSS가 없는 번들에서 `tests/visual/layout.spec.ts` 5개 중 4개가 실패했고, hero/navbar CSS가 없는 번들에서 `hero.spec.ts`·`navbar.spec.ts` 8개 중 6개가 실패했다. typography/asian/tables/media CSS가 없는 번들에서 네 신규 spec 18개 중 15개가 실패했다. forms CSS가 없는 번들에서 `forms.spec.ts` 6개 중 5개가 실패했다. labels/codes CSS가 없는 번들에서 두 신규 spec 24개 중 18개가 실패했다. 변환 후 세 브라우저에서 layout 15개, hero 12개, navbar 12개, typography 12개, asian 15개, tables 15개, media 12개, forms 6개, labels 12개, codes 12개가 모두 통과했다.
-- `pnpm check:phase1`(경고 31건: 레거시 show/hide의 의도된 `!important` 12건, typography 2건, forms descending specificity 17건), `pnpm test` 12개, `pnpm build:phase1`, `pnpm test:visual` 147개, `git diff --check`가 통과했다.
+- `pnpm check:phase1`(경고 108건: 레거시 show/hide 12건, typography 2건, forms 17건, utilities의 레거시 `!important` 77건), `pnpm test` 13개, `pnpm build:phase1`, `pnpm test:visual` 183개, `git diff --check`가 통과했다.
 - `dist/spectre*.css`와 `docs/dist/spectre*.css`는 변경하지 않았다. 레거시 일반 CSS SHA-256은 `c7f773ca3363bc5bd54b2849c0e37435c9e1afbb353fc1d79e16d422907fb924` 그대로다.
-- Phase 02의 나머지 패킷(animations, utilities)은 아직 시작하지 않았다.
+- Phase 02의 모든 패킷이 완료됐다. 다음은 Phase 02 완료 보고와 Phase 03 실행 문서 작성이다. Phase 03 구현은 실행 문서가 준비된 뒤 시작한다.

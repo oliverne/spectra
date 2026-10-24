@@ -1,0 +1,39 @@
+/* Loading */
+.loading {
+  color: transparent !important;
+  min-height: var(--spectra-space-4, 0.8rem);
+  pointer-events: none;
+  position: relative;
+}
+
+.loading::after {
+  animation: loading 500ms infinite linear;
+  background: transparent;
+  border: var(--spectra-border-width-lg, 0.1rem) solid var(--spectra-color-primary, #5755d9);
+  border-radius: 50%;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  content: "";
+  display: block;
+  height: var(--spectra-space-4, 0.8rem);
+  left: 50%;
+  margin-left: calc(-1 * var(--spectra-space-2, 0.4rem));
+  margin-top: calc(-1 * var(--spectra-space-2, 0.4rem));
+  opacity: 1;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  width: var(--spectra-space-4, 0.8rem);
+  z-index: var(--spectra-z-index-active, 1);
+}
+
+.loading.loading-lg {
+  min-height: calc(2 * var(--spectra-space-5, 1rem));
+}
+
+.loading.loading-lg::after {
+  height: calc(2 * var(--spectra-space-4, 0.8rem));
+  margin-left: calc(-1 * var(--spectra-space-4, 0.8rem));
+  margin-top: calc(-1 * var(--spectra-space-4, 0.8rem));
+  width: calc(2 * var(--spectra-space-4, 0.8rem));
+}

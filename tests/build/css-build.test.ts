@@ -30,6 +30,15 @@ describe("Phase 1 CSS build", () => {
       "src/layout/layout.css",
       "src/layout/hero.css",
       "src/layout/navbar.css",
+      "src/utilities/animations.css",
+      "src/utilities/colors.css",
+      "src/utilities/cursors.css",
+      "src/utilities/display.css",
+      "src/utilities/divider.css",
+      "src/utilities/loading.css",
+      "src/utilities/position.css",
+      "src/utilities/shapes.css",
+      "src/utilities/text.css",
     ]) {
       expect(
         sourceMap.sections.some((section) =>
