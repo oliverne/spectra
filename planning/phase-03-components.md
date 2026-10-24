@@ -1,6 +1,6 @@
 # Phase 03 — 기본 컴포넌트
 
-상태: 실행 문서 작성 완료, 구현 대기 (2026-10-24)
+상태: 진행 중 (도구 보완 완료, 2026-10-24). 다음은 정적 표면 패킷.
 
 ## 목표
 
@@ -45,6 +45,13 @@ Phase 02까지 기본 요소·forms·layout·utilities를 Pure CSS로 전환했�
 - 또는 `inspect`/`scaffold`에 `--legacy-start`/`--legacy-end`를 추가해 명시 구간을 쓴다. verify는 이미 지원한다.
 - 수용 조건: `inspect tooltips`의 classes에 `text-primary`, `m-1`, `d-none`이 없고, `scaffold tooltips`의 `legacy.css`가 `.tooltip` 규칙에서 끝난다. 회귀 테스트를 `tests/build/css-migration.test.ts`에 추가한다.
 - tooltips 패킷은 이 보완 전에 시작하지 않는다.
+
+### 완료한 패킷: 도구 보완 (2026-10-24)
+
+1. `firstAtRuleBoundary`를 추가하고 `legacySlice`의 다음 컴포넌트 경계가 selector가 없으면 첫 `@keyframes <name>` prelude를 사용하도록 변경했다. 컴포넌트 자신의 start는 계속 실제 selector만 인정하므로 `inspect animations`는 `legacy: null`을 유지한다.
+2. `tests/build/css-migration.test.ts`에 회귀 테스트를 추가했다. `inspect tooltips`는 `nextComponent: "animations"`, classes 5개(`tooltip`, `tooltip-right`, `tooltip-bottom`, `tooltip-left`, `disabled`)만 보고하고 `text-primary`·`m-1`은 포함하지 않는다. `scaffold tooltips`의 `legacy.css`는 70줄로 `.tooltip` 규칙에서 끝나고 `@keyframes`·utilities가 없다.
+3. `pnpm migrate:css scaffold tooltips`를 실행해 무시되는 `build/migration/tooltips/` 패킷을 만들었다.
+4. `pnpm check:phase1` 통과(경고 108건 유지), `pnpm test` 14개 통과, `git diff --check` 통과. CSS 번들은 변경되지 않아 `pnpm test:visual`은 재실행하지 않았다(직전 183개 통과 유지).
 
 ## 작업 패킷 순서
 

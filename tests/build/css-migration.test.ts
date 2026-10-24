@@ -44,6 +44,29 @@ describe("CSS migration helper", () => {
     expect(forms.legacy?.properties).not.toContain("input");
   });
 
+  test("ends the last component slice at the following keyframes block", async () => {
+    const tooltips = await inspectComponent("tooltips");
+
+    expect(tooltips.legacy?.nextComponent).toBe("animations");
+    expect(tooltips.legacy?.classes).toEqual([
+      "disabled",
+      "tooltip",
+      "tooltip-bottom",
+      "tooltip-left",
+      "tooltip-right",
+    ]);
+    expect(tooltips.legacy?.properties).toContain("white-space");
+    expect(tooltips.legacy?.properties).not.toContain("text-align");
+
+    const directory = await mkdtemp(path.join(tmpdir(), "spectra-migration-tooltips-"));
+    const result = await scaffoldComponent("tooltips", directory);
+    const legacy = await readFile(result.legacyPath, "utf8");
+    expect(legacy).toContain(".tooltip {");
+    expect(legacy).not.toContain("@keyframes");
+    expect(legacy).not.toContain(".m-1");
+    expect(legacy).not.toContain(".text-primary");
+  });
+
   test("drops a trailing partial selector from the next component", async () => {
     const navbar = await inspectComponent("navbar");
 

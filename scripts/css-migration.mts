@@ -110,6 +110,11 @@ function extractKeyframes(source: string) {
   );
 }
 
+function firstAtRuleBoundary(source: string) {
+  const match = stripComments(source).match(/^\s*(@keyframes\s+[A-Za-z_][\w-]*)/m);
+  return match ? match[1].replace(/\s+/g, " ") : null;
+}
+
 function firstSelector(source: string) {
   const input = stripComments(source);
   let blockStart = 0;
@@ -227,24 +232,36 @@ async function legacySlice(component: string) {
     const candidatePath = await resolveSourcePath(candidate);
     const candidateSource = await readFile(candidatePath, "utf8");
     const candidateSelector = firstSelector(candidateSource);
-    if (!candidateSelector) {
-      continue;
-    }
-    const candidateOffset = selectorOffset(legacyBundle, candidateSelector, cursor);
-    if (candidateOffset === -1) {
-      continue;
-    }
-    cursor = candidateOffset + 1;
     if (index === componentIndex) {
+      if (!candidateSelector) continue;
+      const candidateOffset = selectorOffset(legacyBundle, candidateSelector, cursor);
+      if (candidateOffset === -1) continue;
+      cursor = candidateOffset + 1;
       start = candidateOffset;
       startSelector = candidateSelector;
       continue;
     }
-    if (start !== -1 && index > componentIndex) {
-      end = candidateOffset;
-      nextComponent = candidate;
-      break;
+    if (index < componentIndex) {
+      if (!candidateSelector) continue;
+      const candidateOffset = selectorOffset(legacyBundle, candidateSelector, cursor);
+      if (candidateOffset === -1) continue;
+      cursor = candidateOffset + 1;
+      continue;
     }
+    if (start === -1) {
+      continue;
+    }
+    // A component with no selector (for example `_animations.scss`, which starts with
+    // `@keyframes`) still begins a boundary. Use its first at-rule prelude so the previous
+    // component cannot swallow later utilities.
+    const boundary = candidateSelector ?? firstAtRuleBoundary(candidateSource);
+    if (!boundary) continue;
+    const boundaryOffset = selectorOffset(legacyBundle, boundary, cursor);
+    if (boundaryOffset === -1) continue;
+    cursor = boundaryOffset + 1;
+    end = boundaryOffset;
+    nextComponent = candidate;
+    break;
   }
 
   if (start === -1 || !startSelector) {

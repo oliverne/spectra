@@ -4,7 +4,7 @@
 
 ## 현재
 
-- 요청 범위: [Phase 02](phase-02-core-elements-forms-layout-utilities.md) 완료, [Phase 03 실행 문서](phase-03-components.md) 작성 완료. Phase 03 구현은 시작하지 않았다.
+- 요청 범위: [Phase 02](phase-02-core-elements-forms-layout-utilities.md) 완료, [Phase 03](phase-03-components.md) 도구 보완 패킷 완료. 다음은 정적 표면 컴포넌트.
 - Phase 01 완료. Node.js 24.21.0, pnpm 12.5.1, lockfile, Lightning CSS 시험 빌드, Biome, Vitest, Playwright를 도입했다.
 - `layout` 패킷을 완료했다. `src/layout/layout.css`가 `.container`, grid 최대 폭, `.cols/.columns`, `.col-{1..12}`, `.col-auto`, `.col-*` responsive, `.show-*`/`.hide-*`를 `--spectra-space-2` gutter와 정적 480/600/840/960/1280px 경계로 옮겼다.
 - `hero`, `navbar` 패킷을 완료했다. `src/layout/hero.css`가 `.hero`/`.hero-sm`/`.hero-lg` padding과 `.hero-body`의 `--spectra-space-2`를, `src/layout/navbar.css`가 `.navbar`, `.navbar-section`, `.navbar-section:not(:first-child):last-child`, `.navbar-center`, `.navbar-brand`의 `--spectra-font-size-lg`를 평탄한 CSS로 옮겼다. 두 컴포넌트에는 media query와 상태 선택자가 없다.
@@ -14,6 +14,7 @@
 - `src/spectra.css`는 tokens, normalize/base, typography, asian, tables, buttons, forms, labels, codes, media, layout, hero, navbar, animations, utilities 순서로 조립한다. `package.json`의 `check:phase1`은 `src/components`와 `src/utilities`를 포함한다.
 - `animations`, `utilities` 패킷을 완료했다. `src/utilities/animations.css`가 `loading`·`slide-down` keyframes를, `src/utilities/{colors,cursors,display,divider,loading,position,shapes,text}.css`가 `.text-*`/`.bg-*`, cursor, display·assistive, divider, loading, clearfix·float·position·spacing, shape, text 유틸리티를 평탄한 CSS로 옮겼다. legacy `!important` 의미를 유지했고 media query는 없다. `src/tokens.css`에 `--spectra-color-border-light`와 `--spectra-color-text-{primary,secondary,gray,light,dark,success,warning,error}{,-hover,-visited}` 24개를 추가했다.
 - 마이그레이션 도구를 확장했다. `verify`가 `--legacy-start`/`--legacy-end`로 명시 구간을 검사하고 `--target` 반복으로 분할 파일을 합산하며 `@keyframes` 이름 누락을 보고한다. selector 경계가 없는 animations·utilities를 정적 검사할 수 있다.
+- Phase 03 도구 보완을 완료했다. `legacySlice`가 selector 없는 다음 컴포넌트의 첫 `@keyframes`를 경계로 사용해 `inspect tooltips`가 utilities를 삼키지 않는다(classes 5개, scaffold 70줄). `pnpm test` 14개 통과, `pnpm check:phase1` 경고 108건 유지.
 - 도구 경계 버그를 고쳤다. legacy 구간이 다음 컴포넌트의 부분 selector에서 끝날 때 그 클래스가 새던 문제를 `scripts/css-migration.mts`의 `legacySlice`가 마지막 완전한 규칙까지만 남기도록 수정했고, `tests/build/css-migration.test.ts`에 회귀 테스트를 추가했다.
 - Lightning CSS가 `position: absolute`의 `top/right/bottom/left`를 `inset`으로 접어 정적 검사가 누락으로 오인했다. `inset`을 해당 longhand의 커버리지로 계산하도록 도구를 확장하고 `media` 회귀 테스트를 추가했다.
 - `tests/visual/`의 layout 5개, hero 4개, navbar 4개, typography 4개, asian 5개, tables 5개, media 4개, forms 6개, labels 4개, codes 4개 계약이 Chromium/Firefox/WebKit에서 통과했다. computed style은 0.05px 허용 오차(빌드 float32 직렬화), pixel은 byte 비교다. asian font-family 문자열은 브라우저별 따옴표 정규화를 피해 정규식으로 비교한다. forms는 상태·validation·input group·token override·외부 override를 검증한다.
@@ -58,4 +59,4 @@
 
 ## 다음 단계
 
-Phase 03 구현의 첫 패킷은 [phase-03-components.md](phase-03-components.md)의 도구 보완이다. `inspect tooltips`가 `@keyframes loading`을 legacy 경계로 인식하도록 `legacySlice`를 확장하거나 `inspect`/`scaffold`에 `--legacy-start`/`--legacy-end`를 추가하고, tooltips 구간이 utilities를 포함하지 않는 회귀 테스트를 작성한다. 그 다음 정적 표면(breadcrumbs, cards, panels, tiles, empty) 패킷을 테스트 우선으로 진행한다.
+[phase-03-components.md](phase-03-components.md)의 정적 표면 패킷(breadcrumbs, cards, panels, tiles, empty)을 테스트 우선으로 진행한다. `card`를 popovers보다 먼저 전환하고, 각 컴포넌트에 legacy 대비 computed style·pixel·token scope·외부 override 계약을 둔다. 도구 보완은 완료됐고 `build/migration/tooltips/` 패킷이 준비돼 있다.
