@@ -1,6 +1,6 @@
 # Phase 03 — 기본 컴포넌트
 
-상태: 진행 중 (도구 보완 완료, 2026-10-24). 다음은 정적 표면 패킷.
+상태: 진행 중 (도구 보완·정적 표면 완료, 2026-10-24). 다음은 표시 단위 패킷.
 
 ## 목표
 
@@ -70,6 +70,24 @@ Phase 02까지 기본 요소·forms·layout·utilities를 Pure CSS로 전환했�
 11. **알림**: toasts.
 
 menus를 dropdowns보다 먼저, cards를 popovers보다 먼저 전환한다. badges·avatars·chips는 서로의 fixture에 companion CSS로 포함한다. modals·toasts는 `.btn-clear`, `.btn`을 companion으로 사용한다.
+
+## 완료한 패킷: 정적 표면 (2026-10-24)
+
+1. `pnpm migrate:css scaffold breadcrumbs|cards|panels|tiles|empty`와 `inspect`로 legacy 구간·클래스·속성을 조사했다. 다섯 컴포넌트 모두 media query·상태 선택자·Sass loop가 없다.
+2. `tests/visual/{breadcrumbs,cards,panels,tiles,empty}.spec.ts`에 각 4개씩 계약을 추가했다. computed style·pixel parity, 컴포넌트 계약, 전역·중첩 token scope, 후행 외부 override를 검증한다.
+3. `src/components/{breadcrumbs,cards,empty,panels,tiles}.css`를 평탄한 CSS로 작성하고 `src/spectra.css`에 legacy 순서(breadcrumbs, cards, empty, panels, tiles)로 import했다.
+4. 새 토큰은 추가하지 않았다. 기존 `--spectra-color-text-muted`, `--spectra-color-background`, `--spectra-color-background-subtle`, `--spectra-color-border`, `--spectra-border-*`, `--spectra-space-{1,2,4}`, `--spectra-line-height`로 모두 대응했다. empty의 3.2/1.6rem는 `calc(4 * var(--spectra-space-4))`/`calc(2 * var(--spectra-space-4))`로 표현했다.
+5. `tests/build/css-build.test.ts`의 source map 검사 목록에 다섯 파일을 추가했다.
+
+결과 (2026-10-24):
+
+- 다섯 `verify` 모두 통과(`ok: true`, 누락 클래스·media query·표준 속성 없음).
+- 실패 우선: 다섯 CSS가 없는 번들에서 60개 중 47개가 실패했고, 후행 외부 override를 독립적으로 설정하는 13개만 통과했다. 변환 후 세 브라우저 60개가 모두 통과했다.
+- `pnpm test:visual` 243개 통과(기존 183 + 정적 표면 60).
+- `pnpm test` 14개, `pnpm check:phase1` 통과(경고 108건 유지, 신규 CSS 경고 없음).
+- 일반 62,052바이트, 압축 53,168바이트, gzip 일반 9,764바이트(animations/utilities 시점 58,672/50,214/9,337).
+- `dist/spectre*.css`와 docs 사본은 변경하지 않았고 SHA-256이 유지됐다.
+- 브라우저 보고 차이로 contract 기대값을 조정한 항목: `margin: 0`은 `margin-right`가 별도로 적용되어 longhand로 확인, `margin: auto`는 사용값 0px, 마지막 자식 padding·tile content 우측 padding은 실제 계산값(0)을 사용했다. 높은 명시도(`:not(:first-child)`) 규칙을 덮는 외부 override는 같은 selector로 작성했다.
 
 ## 수용 조건
 

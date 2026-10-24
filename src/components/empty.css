@@ -1,0 +1,21 @@
+/* Empty states (or Blank slates) */
+.empty {
+  background: var(--spectra-color-background-subtle, #f7f8f9);
+  border-radius: var(--spectra-border-radius, 0.1rem);
+  color: var(--spectra-color-text-muted, #66758c);
+  padding: calc(4 * var(--spectra-space-4, 0.8rem)) calc(2 * var(--spectra-space-4, 0.8rem));
+  text-align: center;
+}
+
+.empty .empty-icon {
+  margin-bottom: var(--spectra-space-4, 0.8rem);
+}
+
+.empty .empty-title,
+.empty .empty-subtitle {
+  margin: var(--spectra-space-2, 0.4rem) auto;
+}
+
+.empty .empty-action {
+  margin-top: var(--spectra-space-4, 0.8rem);
+}

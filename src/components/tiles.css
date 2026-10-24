@@ -1,0 +1,44 @@
+/* Tiles */
+.tile {
+  align-content: space-between;
+  align-items: flex-start;
+  display: flex;
+}
+
+.tile .tile-icon,
+.tile .tile-action {
+  flex: 0 0 auto;
+}
+
+.tile .tile-content {
+  flex: 1 1 auto;
+}
+
+.tile .tile-content:not(:first-child) {
+  padding-left: var(--spectra-space-2, 0.4rem);
+}
+
+.tile .tile-content:not(:last-child) {
+  padding-right: var(--spectra-space-2, 0.4rem);
+}
+
+.tile .tile-title,
+.tile .tile-subtitle {
+  line-height: var(--spectra-line-height, 1.2rem);
+}
+
+.tile.tile-centered {
+  align-items: center;
+}
+
+.tile.tile-centered .tile-content {
+  overflow: hidden;
+}
+
+.tile.tile-centered .tile-title,
+.tile.tile-centered .tile-subtitle {
+  margin-bottom: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

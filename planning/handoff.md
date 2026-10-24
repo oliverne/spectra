@@ -2,7 +2,7 @@
 
 갱신일: 2026-10-24
 
-이 문서는 새 세션·모델·에이전트의 진입점이다. 상태의 원본은 [progress.md](progress.md), 전체 계약과 단계 순서는 [plan.md](plan.md), 완료된 직전 범위는 [Phase 02 문서](phase-02-core-elements-forms-layout-utilities.md)이고, 다음 실행 범위는 [Phase 03 문서](phase-03-components.md)다. Phase 03은 도구 보완 패킷까지 완료했고 다음은 정적 표면 컴포넌트다.
+이 문서는 새 세션·모델·에이전트의 진입점이다. 상태의 원본은 [progress.md](progress.md), 전체 계약과 단계 순서는 [plan.md](plan.md), 완료된 직전 범위는 [Phase 02 문서](phase-02-core-elements-forms-layout-utilities.md)이고, 다음 실행 범위는 [Phase 03 문서](phase-03-components.md)다. Phase 03은 도구 보완과 정적 표면 패킷(breadcrumbs, cards, empty, panels, tiles)까지 완료했고, 다음은 표시 단위(avatars, badges, chips)다.
 
 ## 새 컨텍스트 시작 순서
 
@@ -16,22 +16,31 @@
 
 ## 현재 체크포인트
 
-- Phase 01과 Phase 02가 완료됐다. Phase 02는 마이그레이션 도구와 `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms`, `labels`, `codes`, `animations`, `utilities` 패킷을 완료했다. Phase 03 실행 문서와 첫 패킷(tooltips legacy 경계 도구 보완)을 완료했다.
+- Phase 01과 Phase 02가 완료됐다. Phase 02는 마이그레이션 도구와 `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms`, `labels`, `codes`, `animations`, `utilities` 패킷을 완료했다. Phase 03 실행 문서, tooltips legacy 경계 도구 보완, 정적 표면 5개 컴포넌트를 완료했다.
 - `src/spectra.css`는 tokens, normalize/base, typography, asian, tables, buttons, forms, labels, codes, media, layout, hero, navbar, animations, utilities 순서로 조립한다. `src/components/*.css`, `src/layout/*.css`, `src/utilities/*.css`가 레거시 평탄 CSS를 담는다. Sass partial은 Phase 06까지 남겨둔다.
 - `pnpm migrate:css inspect|scaffold|verify`가 SCSS 조사, 체크인된 기존 CSS 구간 추출, 후보의 정적 범위 검사를 제공한다. `legacySlice`는 마지막 완전한 규칙까지만 남겨 다음 컴포넌트의 부분 selector 클래스가 새지 않는다. `verify`는 Lightning CSS가 `top/right/bottom/left`를 접은 `inset` 축약을 물리 longhand 커버리지로 인정한다. selector 경계가 없는 구간은 `--legacy-start`/`--legacy-end`, 분할 파일은 `--target` 반복으로 검사하며 `@keyframes` 이름 누락을 실패로 계산한다.
 - `layout`, `hero`, `navbar`, `typography`, `asian`, `tables`, `media`, `forms`, `labels`, `codes` 작업 패킷은 무시되는 `build/migration/<component>/`에 있다. `animations`와 `utilities`는 `legacy: null`이라 scaffold를 만들지 않았고 range verify로 정적 검사를 대신했다. 같은 workspace에서 파일이 존재하면 `scaffold`를 다시 실행하지 않는다(기존 패킷을 덮어쓰지 않고 실패한다). 새 checkout처럼 파일이 없으면 명령으로 재생성한다.
 - 기존 Gulp/Sass, Pug, `dist/spectre*.css`, `docs/dist/spectre*.css`, 패키지 `main`은 유지돼 있다. 정식 `dist/spectra.css`는 아직 없다.
 - `pnpm-workspace.yaml`이 이번 세션에 생겼다. `allowBuilds`에서 `node-sass`만 `false`이고 `core-js`, `es5-ext`, `fsevents`, `highlight.js`는 `true`다. node-sass postinstall은 darwin-arm64 바이너리 404와 python2 부재로 실패해 install을 막는다.
 
-### Phase 03 도구 보완 변경 세트
+### Phase 03 정적 표면 변경 세트
 
 아래 파일이 이번 패킷을 구성한다. 커밋 여부와 브랜치·원격 차이는 새 컨텍스트에서 Git으로 다시 확인한다.
 
 ```text
-modified  scripts/css-migration.mts
-modified  tests/build/css-migration.test.ts
-added     planning/phase-03-components.md
-modified  planning/{plan,progress,handoff}.md
+modified  src/spectra.css
+modified  tests/build/css-build.test.ts
+added     src/components/breadcrumbs.css
+added     src/components/cards.css
+added     src/components/empty.css
+added     src/components/panels.css
+added     src/components/tiles.css
+added     tests/visual/breadcrumbs.spec.ts
+added     tests/visual/cards.spec.ts
+added     tests/visual/empty.spec.ts
+added     tests/visual/panels.spec.ts
+added     tests/visual/tiles.spec.ts
+modified  planning/{phase-03-components,plan,progress,handoff}.md
 modified  planning/handoff.md
 modified  planning/progress.md
 modified  planning/phase-02-core-elements-forms-layout-utilities.md
@@ -44,21 +53,22 @@ modified  planning/plan.md
 build/phase-01/spectra.css
 build/phase-01/spectra.css.map
 build/phase-01/spectra.min.css
-build/migration/{layout,hero,navbar,typography,asian,tables,media,forms,labels,codes,tooltips}/{inspection.json,legacy.css,candidate.css}
+build/migration/{layout,hero,navbar,typography,asian,tables,media,forms,labels,codes,tooltips,breadcrumbs,cards,panels,tiles,empty}/{inspection.json,legacy.css,candidate.css}
 ```
 
 이 변경 세트에는 새 의존성이 없고 `pnpm-lock.yaml`은 바뀌지 않았다.
 
 ## 마지막 검증 근거
 
+- `pnpm migrate:css verify breadcrumbs|cards|panels|tiles|empty --target src/components/<component>.css`: 모두 통과. 누락 클래스·media query·표준 속성이 없다.
 - `pnpm migrate:css verify animations --target src/utilities/animations.css --legacy-start "@keyframes loading" --legacy-end ".text-primary"`: 통과. 누락 keyframe·속성이 없다.
 - `pnpm migrate:css verify utilities --legacy-start ".text-primary"` + `src/utilities/*.css` 8개 반복 target: 통과. 누락 클래스·keyframe·media query·표준 속성이 없다.
 - `pnpm migrate:css verify <component> --target src/_<component>.scss`: layout/hero/navbar/typography/asian/tables/media/forms/labels/codes 모두 의도대로 종료 코드 1. 잔존 Sass와 breakpoint 불일치를 보고했다.
 - `pnpm test`: 2개 파일 13개 통과. source map의 `src/components/*.css`, `src/layout/*.css`, `src/utilities/*.css` 포함 검사를 추가했다. range verify·keyframe 누락·다중 target·잘못된 start selector 회귀 검사를 추가했다.
-- 실패 우선: animations/utilities CSS가 없는 번들에서 `tests/visual/{animations,utilities}.spec.ts` 36개 중 33개가 실패했다(외부 override 3건은 라이브러리 CSS가 없어도 통과).
-- `pnpm test:visual`: Chromium/Firefox/WebKit 183개 통과(기존 147 + animations 12 + utilities 24). animations는 keyframes 값·`.loading` 기하·token scope·외부 override를, utilities는 색상·hover/focus·display·divider·position·spacing·shape·text·`!important`를 검증한다.
+- 실패 우선: 정적 표면 CSS가 없는 번들에서 `tests/visual/{breadcrumbs,cards,panels,tiles,empty}.spec.ts` 60개 중 47개가 실패했다(외부 override 13건은 라이브러리 CSS가 없어도 통과).
+- `pnpm test:visual`: Chromium/Firefox/WebKit 243개 통과(기존 183 + breadcrumbs 12 + cards 12 + panels 12 + tiles 12 + empty 12). 정적 표면은 separator·image corner·flex/scroll·centered ellipsis·spacing과 token scope·외부 override를 검증한다.
 - `pnpm check:phase1`: 통과. 경고 108건(레거시 show/hide 12건, typography 2건, forms 17건, utilities의 레거시 `!important` 77건). utilities 경고는 레거시 의미 보존 결과다.
-- `pnpm build:phase1`: 통과. 일반 58,672바이트, 압축 50,214바이트, gzip 일반 9,337바이트(labels/codes 시점 46,605/40,021/7,551).
+- `pnpm build:phase1`: 통과. 일반 62,052바이트, 압축 53,168바이트, gzip 일반 9,764바이트(animations/utilities 시점 58,672/50,214/9,337).
 - WebKit에서 `:root` custom property가 있을 때 단일 `<select>`의 `getComputedStyle`이 rem 기반 값을 초기 16px root로 보고하는 현상을 확인했다. 실제 렌더링은 legacy와 byte-identical이므로 CSS 보정을 넣지 않았고, WebKit에 한해 select computed style 비교만 제외한 뒤 pixel 비교를 유지했다. 1.25배 CSS 보정은 실제 렌더링을 확대해 회귀를 만들었다.
 - `pnpm test` 14개 통과. `tests/build/css-migration.test.ts`에 `tooltips`가 `@keyframes loading`에서 끝나는 회귀 검사와 `scaffold tooltips`의 utilities 비포함 검사를 추가했다.
 - `git diff --check`: 통과. `dist/spectre*.css`와 docs 사본은 변경하지 않았고 SHA-256 `c7f773ca3363bc5bd54b2849c0e37435c9e1afbb353fc1d79e16d422907fb924`가 유지됐다.
@@ -86,7 +96,7 @@ build/migration/{layout,hero,navbar,typography,asian,tables,media,forms,labels,c
 
 ## 즉시 재개할 작업
 
-Phase 03의 도구 보완 패킷이 완료됐다(`tooltips` boundary, `build/migration/tooltips/` 준비). 다음은 [Phase 03 문서](phase-03-components.md)의 정적 표면 패킷이다. breadcrumbs, cards, panels, tiles, empty를 테스트 우선으로 전환하고, 각 컴포넌트에 legacy computed style·pixel·token scope·외부 override 계약을 둔다.
+Phase 03의 도구 보완과 정적 표면 패킷이 완료됐다. 다음은 [Phase 03 문서](phase-03-components.md)의 표시 단위 패킷이다. avatars, badges, chips를 테스트 우선으로 전환하고, badges는 avatars 다음에 두며 세 컴포넌트를 서로의 fixture companion으로 검증한다.
 
 Phase 02의 나머지 패킷 순서와 수용 조건·검증 명령은 Phase 02 문서를 따른다. Phase 03–06의 범위와 단계 전환 규칙은 [plan.md의 `이후 단계 실행 로드맵`](plan.md)을 따른다. 현재 패킷이나 phase가 완료되기 전 다음 범위로 자동 전환하지 않는다.
 

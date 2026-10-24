@@ -14,6 +14,12 @@
 @import "./layout/layout.css";
 @import "./layout/hero.css";
 @import "./layout/navbar.css";
+/* Components keep the legacy src/spectre.scss order. */
+@import "./components/breadcrumbs.css";
+@import "./components/cards.css";
+@import "./components/empty.css";
+@import "./components/panels.css";
+@import "./components/tiles.css";
 /* Utility classes keep the legacy src/spectre.scss order: animations, then src/_utilities.scss. */
 @import "./utilities/animations.css";
 @import "./utilities/colors.css";

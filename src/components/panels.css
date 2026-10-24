@@ -1,0 +1,23 @@
+/* Panels */
+.panel {
+  border: var(--spectra-border-width, 0.05rem) solid var(--spectra-color-border, #dadee4);
+  border-radius: var(--spectra-border-radius, 0.1rem);
+  display: flex;
+  flex-direction: column;
+}
+
+.panel .panel-header,
+.panel .panel-footer {
+  flex: 0 0 auto;
+  padding: var(--spectra-space-4, 0.8rem);
+}
+
+.panel .panel-nav {
+  flex: 0 0 auto;
+}
+
+.panel .panel-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0 var(--spectra-space-4, 0.8rem);
+}
