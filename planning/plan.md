@@ -1,6 +1,6 @@
 # Spectra — Pure CSS 전환 계획
 
-상태: Phase 01·02 완료, Phase 03 실행 문서 작성 대기 · 갱신일: 2026-10-24
+상태: Phase 01·02 완료, Phase 03 실행 문서 작성 완료·구현 대기 · 갱신일: 2026-10-24
 
 ## 목표와 범위
 
@@ -143,7 +143,7 @@ watch는 CSS import 의존 파일과 Pug include 변경을 반영해야 한다. 
 
 ### Phase 03 — 나머지 기본 컴포넌트
 
-Phase 02 완료 후 실행 문서를 작성한다. accordions, avatars, badges, breadcrumbs, bars, cards, chips, dropdowns, empty, menus, modals, navs, pagination, panels, popovers, steps, tabs, tiles, toasts, tooltips를 기존 import 순서대로 작은 의존 그룹으로 전환한다. 기본 번들 전체가 Pure CSS가 되고 상태·pseudo-element·CSS-only 상호작용 parity가 통과해야 완료다.
+Phase 02 완료 후 실행 문서를 작성한다. accordions, avatars, badges, breadcrumbs, bars, cards, chips, dropdowns, empty, menus, modals, navs, pagination, panels, popovers, steps, tabs, tiles, toasts, tooltips를 기존 import 순서대로 작은 의존 그룹으로 전환한다. 기본 번들 전체가 Pure CSS가 되고 상태·pseudo-element·CSS-only 상호작용 parity가 통과해야 완료다. 실행 문서는 2026-10-24에 [phase-03-components.md](phase-03-components.md)로 작성했고 구현은 아직 시작하지 않았다.
 
 ### Phase 04 — experimentals·icons·RTL
 
